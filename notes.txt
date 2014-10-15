@@ -1,0 +1,6 @@
+
+SpatiotemporalPrediction-2012_1-s2.0-S1525505012004763-main.pdf
+  Indicates that pair-wise correlations, including time-delayed samples, worked.
+  Odd sorted eigenvectors idea
+  SVM trained 
+  
