@@ -4,3 +4,9 @@ SpatiotemporalPrediction-2012_1-s2.0-S1525505012004763-main.pdf
   Odd sorted eigenvectors idea
   SVM trained 
   
+
+
+
+
+ git commit -a -m "Started AES" | grep -v \\.\\.
+ 
