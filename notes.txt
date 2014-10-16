@@ -1,4 +1,7 @@
 
+Loading Data into Python :
+  https://www.kaggle.com/c/seizure-prediction/forums/t/10128/fields-in-matlab-file-can-t-find-data-etc
+
 SpatiotemporalPrediction-2012_1-s2.0-S1525505012004763-main.pdf
   Indicates that pair-wise correlations, including time-delayed samples, worked.
   Odd sorted eigenvectors idea
@@ -8,5 +11,5 @@ SpatiotemporalPrediction-2012_1-s2.0-S1525505012004763-main.pdf
 
 
 
- git commit -a -m "Started AES" | grep -v \\.\\.
+git commit -a -m "Started AES" | grep -v \\.\\.
  
