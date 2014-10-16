@@ -9,6 +9,8 @@ cd data/orig
 tar -xzf Dog2.tar.gz
 cd ../..
 
+# Works to test loader :
+python src/graph.py 
 
 
 SpatiotemporalPrediction-2012_1-s2.0-S1525505012004763-main.pdf

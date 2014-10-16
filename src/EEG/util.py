@@ -23,7 +23,6 @@ I have only looked at Dog_5 (the short one). Can anyone confirm that these are a
 
 """
 
-
 def load(_patient, _type, _num):
   # 'Dog_1_interictal_segment_0008.mat'
   f = "data/orig/%s/%s_%s_segment_%04d.mat" % (_patient, _patient, _type, _num)
@@ -31,6 +30,7 @@ def load(_patient, _type, _num):
   #print f, sample
   
   data_struct = scipy.io.loadmat(f)
-  print "# of electrodes : ", len(data_struct[sample][0][0][3][0])
+  #print "# of electrodes : ", len(data_struct[sample][0][0][3][0])
 
   return data_struct[sample][0][0]
+

@@ -1,3 +1,5 @@
 import EEG
 
-EEG.util.load('Dog_2', 'interictal', 17)
+p = EEG.EEG('Dog_2', 'interictal', 17)
+
+print p  
