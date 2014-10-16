@@ -1,3 +1,15 @@
+## Follow notes in : 
+http://blog.mdda.net/oss/2014/10/13/ipython-on-fedora/
+
+ipython notebook
+# and open a browser to http://localhost:8888/
+%matplotlib inline
+
+cd data/orig
+tar -xzf Dog2.tar.gz
+cd ../..
+
+
 
 SpatiotemporalPrediction-2012_1-s2.0-S1525505012004763-main.pdf
   Indicates that pair-wise correlations, including time-delayed samples, worked.
@@ -5,8 +17,56 @@ SpatiotemporalPrediction-2012_1-s2.0-S1525505012004763-main.pdf
   SVM trained 
   
   
+## ROC AUC analysis/issues : 
+https://www.kaggle.com/c/seizure-prediction/forums/t/10383/leaderboard-metric-roc-auc
+
+I get a huge discrepancy between CV results and leaderboard score. I think that could be due to a higher percentage of positive examples in the test set for Patients 1 and 2. Because these subjects are (by far) the most difficult ones, the gap could be there.
+
+Michael Hills :
+There are many different ways you can split the sequence groups, the current split I am using gives me good scores for Dog_2, Dog_3, Dog_5, Patient_1, and bad splits for Dog_1 and Patient_2. Where good is > 0.8 and bad is like < 0.5. Not sure why I'm getting scores less than 0.5 ROC AUC (as low as 0.153), suggesting maybe my features have no useful data? Or at least suggesting that some sequences are quite different to others.
 
 
 
 git commit -a -m "Started AES" | grep -v \\.\\.
  
+
+
+
+
+
+
+1	—	Michael Hills *	
+0.83403
+177	Thu, 16 Oct 2014 03:37:18 (-0.3h)
+
+2	↑2	Tsakalis Kostas *	
+0.81576
+170	Wed, 15 Oct 2014 19:56:52 (-2.5d)
+
+3	↓1	zzspar *	
+0.80999
+90	Sat, 11 Oct 2014 09:00:07 (-5.3d)
+
+4	↓1	Dietmar Baum	
+0.80878
+139	Wed, 15 Oct 2014 23:15:14
+
+5	↑155	Fission	
+0.79516
+36	Wed, 15 Oct 2014 08:31:40 (-4.8d)
+
+6	↑5	Carlos Fernandez	
+0.77988
+87	Tue, 14 Oct 2014 19:50:12
+
+7	↓2	Vilen Jumutc	
+0.77949
+182	Wed, 15 Oct 2014 08:50:46 (-25.4h)
+
+8	↑11	Balu Krishnan	
+0.77580
+33	Wed, 15 Oct 2014 22:16:38
+
+9	↓2	cgp & Alexandre & blaine  Team	
+0.77122
+169	Wed, 15 Oct 2014 15:05:01 (-29.5h)

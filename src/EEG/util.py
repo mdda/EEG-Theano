@@ -18,5 +18,12 @@ data_struct[sample][0][0][4][0] - The index of the clip's location within the ho
 
 EDIT: For the last bullet, you should only expect to have a '4' value for the third index for preictal and interictal files. Since we are not given the test files in the context of an hour long series, they are not provided with this field. Thanks to Lawrence for pointing out the lack of clarity! :)
 
+BTW, it's seems we spend many GB for zeroes ) All data traces saved in DBL (double), but they appears in SHORT (i16)... At least the examples I tried..
+I have only looked at Dog_5 (the short one). Can anyone confirm that these are all i16's taken straight from the ADC, so I can safely shrink them?
+
 """
 
+
+def load(_patient, _type, _num):
+  # 'Dog_1_interictal_segment_0008.mat'
+  data_struct = scipy.io.loadmat("%s/%s_%s_segment_%04d.mat" % (_patient, _patient, _type, _num)
