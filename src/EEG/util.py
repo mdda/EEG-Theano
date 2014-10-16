@@ -1,4 +1,4 @@
-
+import scipy.io
 
 #Loading Data into Python :
 #  https://www.kaggle.com/c/seizure-prediction/forums/t/10128/fields-in-matlab-file-can-t-find-data-etc
@@ -26,4 +26,11 @@ I have only looked at Dog_5 (the short one). Can anyone confirm that these are a
 
 def load(_patient, _type, _num):
   # 'Dog_1_interictal_segment_0008.mat'
-  data_struct = scipy.io.loadmat("%s/%s_%s_segment_%04d.mat" % (_patient, _patient, _type, _num)
+  f = "data/orig/%s/%s_%s_segment_%04d.mat" % (_patient, _patient, _type, _num)
+  sample = "%s_segment_%d" % (_type, _num)
+  #print f, sample
+  
+  data_struct = scipy.io.loadmat(f)
+  print "# of electrodes : ", len(data_struct[sample][0][0][3][0])
+
+  return data_struct[sample][0][0]
