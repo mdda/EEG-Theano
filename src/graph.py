@@ -2,44 +2,31 @@ import EEG
 import numpy as np
 
 p = EEG.EEG('Dog_2', 'interictal', 17)
+p.normalize_channels()
 
 #print np.shape(p.data)  == (16, ~240k)
 
 data = p.data
-#norms = np.apply_along_axis(np.linalg.norm, 0, data)
-
-## This is the key that stops mean() and std() behaving as expected
-#print np.result_type(data)
-
-## See :: https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/preprocessing/data.py
 eeg = np.rollaxis(data, 1)
 
-means = eeg.mean(axis=0)
-stdev = eeg.std(axis=0)
-
-#print np.shape(means)
-
-#print means
-#print stdev
-
-eeg -= means
-eeg /= stdev
-
-means = eeg.mean(axis=0)
-stdev = eeg.std(axis=0)
-
-#exit(0)
-
-# p797 of pdf : matshow()
+# see p797 of matplotlib pdf : matshow() for 2d colour-map of (say) correlation matrix
 
 import matplotlib.pyplot as plt
 
 #data = p.data
+n = p.n_channels
+spacing = 3
 
-plt.figure(3);
-plt.plot(eeg[:, 0:20000] + 5*np.arange(0,p.n_channels,1));
+fig = plt.figure()
+ax = fig.add_subplot(111)
 
-#plt.plot(np.zeros((512,8)) + 80*np.arange(7,-1,-1),'--',color='gray');
-#plt.yticks([]);
-#plt.axis('tight');
-#plt.legend(first['channels']);
+ax.plot(eeg[:, 0:20000] + spacing*np.arange(0,n,1))
+
+#ax.plot(np.zeros((20000,p.n_channels)) + spacing*np.arange(0,n,1),'--',color='gray')
+#ax.yticks([])
+ax.axis('tight')
+#ax.legend(first['channels'])
+
+plt.show()
+
+print "DONE"

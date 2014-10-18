@@ -19,6 +19,20 @@ class EEG:
 
     self.timeperiod = None if _type == 'test' else d[4][0][0]
 
+    
+  def normalize_channels(self):
+    ## This is the key that stops mean() and std() behaving as expected
+    #print np.result_type(data)
+
+    ## See :: https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/preprocessing/data.py
+    eeg = np.rollaxis(self.data, 1)
+
+    means = eeg.mean(axis=0)
+    stdev = eeg.std(axis=0)
+
+    eeg -= means
+    eeg /= stdev
+
   def __repr__(self):
     s = "%d Electrodes : Length: %f sec, SampleRate: %f Hz, TimePeriod: %d" % (
       len(self.electrode),
