@@ -14,7 +14,9 @@ class EEG:
     self.sample_rate_in_hz = d[2][0][0]
     
     electrode_arr = d[3][0]  # This is an array
+    self.n_channels = len(electrode_arr)
     self.electrode = [ e[0] for e in electrode_arr ]
+
     self.timeperiod = None if _type == 'test' else d[4][0][0]
 
   def __repr__(self):

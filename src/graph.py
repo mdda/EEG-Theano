@@ -28,22 +28,16 @@ eeg /= stdev
 means = eeg.mean(axis=0)
 stdev = eeg.std(axis=0)
 
-#print np.shape(means)
-#print np.shape(eeg)
-
-#print means
-#print stdev
-
-exit(0)
+#exit(0)
 
 # p797 of pdf : matshow()
 
 import matplotlib.pyplot as plt
 
-data = p.data
+#data = p.data
 
 plt.figure(3);
-plt.plot(filtered[:, 0:20000].T + 5*np.arange(7,-1,-1));
+plt.plot(eeg[:, 0:20000] + 5*np.arange(0,p.n_channels,1));
 
 #plt.plot(np.zeros((512,8)) + 80*np.arange(7,-1,-1),'--',color='gray');
 #plt.yticks([]);
