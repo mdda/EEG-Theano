@@ -1,9 +1,13 @@
 import util
+import numpy as np
 
 class EEG:
   def __init__(self, _patient, _type, _num):
     d = util.load(_patient, _type, _num)
-    self.data = d[0]
+    self.data = d[0].astype(dtype=np.float32)
+    
+    #print d[1][0]
+    #print type(d[0])
     
     # Unbox simple parameters
     self.length_in_sec = d[1][0][0]
