@@ -31,8 +31,9 @@ There are many different ways you can split the sequence groups, the current spl
 
 git commit -a -m "Started AES" | grep -v \\.\\.
  
-
-
+MatPlotLib docs p124 :
+You can embed matplotlib into pygtk, wx, Tk, FLTK, or Qt applications. Here is a screenshot of an EEG
+viewer called pbrain, which is part of the NeuroImaging in Python suite NIPY.
 
 
 
