@@ -15,14 +15,15 @@ import matplotlib.pyplot as plt
 
 #data = p.data
 n = p.n_channels
-spacing = 3
+spacing = 5
+trace_levels = spacing*np.arange(n,0,-1)
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
 
-ax.plot(eeg[:, 0:20000] + spacing*np.arange(0,n,1))
+ax.plot(eeg[0:2000, :] + trace_levels)
 
-#ax.plot(np.zeros((20000,p.n_channels)) + spacing*np.arange(0,n,1),'--',color='gray')
+ax.plot(np.zeros((2000, n)) + trace_levels, '--', color='gray')
 #ax.yticks([])
 ax.axis('tight')
 #ax.legend(first['channels'])
