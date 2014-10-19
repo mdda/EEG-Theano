@@ -24,11 +24,14 @@ n = p.n_channels
 spacing = 5
 trace_levels = spacing*np.arange(n,0,-1)
 
+t_start  = 0
+t_length = 2000
+
 fig = plt.figure()
 ax = fig.add_subplot(111)
 
-ax.plot(eeg[0:2000, :] + trace_levels)
-ax.plot(np.zeros((2000, n)) + trace_levels, '--', color='gray')
+ax.plot(eeg[t_start:(t_start+t_length), :] + trace_levels)
+ax.plot(np.zeros((t_length, n)) + trace_levels, '--', color='gray')
 
 plt.yticks(trace_levels)
 ax.set_yticklabels(p.electrode)
