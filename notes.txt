@@ -5,6 +5,10 @@ ipython notebook
 # and open a browser to http://localhost:8888/
 %matplotlib inline
 
+sudo yum install tk-devel
+
+
+
 cd data/orig
 tar -xzf Dog2.tar.gz
 cd ../..

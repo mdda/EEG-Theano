@@ -11,6 +11,10 @@ eeg = np.rollaxis(data, 1)
 
 # see p797 of matplotlib pdf : matshow() for 2d colour-map of (say) correlation matrix
 
+import matplotlib
+#matplotlib.use('Qt4Agg')  # Needs PySide
+#matplotlib.use('GTKAgg')  # Needs pygtk
+#matplotlib.use('TkAgg')  # Needs Tkinter
 import matplotlib.pyplot as plt
 
 #data = p.data
@@ -24,6 +28,7 @@ ax = fig.add_subplot(111)
 ax.plot(eeg[0:2000, :] + trace_levels)
 
 ax.plot(np.zeros((2000, n)) + trace_levels, '--', color='gray')
+ax.set_yticklabels(p.electrode)
 #ax.yticks([])
 ax.axis('tight')
 #ax.legend(first['channels'])
