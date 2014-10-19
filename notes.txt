@@ -5,9 +5,6 @@ ipython notebook
 # and open a browser to http://localhost:8888/
 %matplotlib inline
 
-sudo yum install tk-devel
-
-
 
 cd data/orig
 tar -xzf Dog2.tar.gz
@@ -80,3 +77,5 @@ viewer called pbrain, which is part of the NeuroImaging in Python suite NIPY.
 9	↓2	cgp & Alexandre & blaine  Team	
 0.77122
 169	Wed, 15 Oct 2014 15:05:01 (-29.5h)
+
+http://www.sharp.co.jp/aquos/products/lc46xl10_spec.html

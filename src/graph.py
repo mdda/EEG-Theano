@@ -1,3 +1,5 @@
+#import pygtk
+
 import EEG
 import numpy as np
 
@@ -11,10 +13,10 @@ eeg = np.rollaxis(data, 1)
 
 # see p797 of matplotlib pdf : matshow() for 2d colour-map of (say) correlation matrix
 
-import matplotlib
-#matplotlib.use('Qt4Agg')  # Needs PySide
-#matplotlib.use('GTKAgg')  # Needs pygtk
-#matplotlib.use('TkAgg')  # Needs Tkinter
+#import matplotlib
+#matplotlib.use('Qt4Agg')  # Needs PySide - difficult to install, large
+#matplotlib.use('GTKAgg')  # Needs pygtk   - found script on Gist.github.com
+#matplotlib.use('TkAgg')  # Needs Tkinter - difficult within VirtualEnv
 import matplotlib.pyplot as plt
 
 #data = p.data
