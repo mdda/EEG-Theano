@@ -28,9 +28,10 @@ ax = fig.add_subplot(111)
 ax.plot(eeg[0:2000, :] + trace_levels)
 
 ax.plot(np.zeros((2000, n)) + trace_levels, '--', color='gray')
+
 ax.set_yticklabels(p.electrode)
-#ax.yticks([])
 ax.axis('tight')
+
 #ax.legend(first['channels'])
 
 plt.show()
