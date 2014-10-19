@@ -26,9 +26,9 @@ fig = plt.figure()
 ax = fig.add_subplot(111)
 
 ax.plot(eeg[0:2000, :] + trace_levels)
-
 ax.plot(np.zeros((2000, n)) + trace_levels, '--', color='gray')
 
+plt.yticks(trace_levels)
 ax.set_yticklabels(p.electrode)
 ax.axis('tight')
 
