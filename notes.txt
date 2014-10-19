@@ -1,5 +1,8 @@
 ## Follow notes in : 
 http://blog.mdda.net/oss/2014/10/13/ipython-on-fedora/
+http://blog.mdda.net/oss/2014/10/19/pygtk-for-virtualenv/
+http://blog.mdda.net/oss/2014/10/20/directories-in-ipython/
+
 
 ipython notebook
 # and open a browser to http://localhost:8888/
