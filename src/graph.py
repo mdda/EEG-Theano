@@ -3,8 +3,8 @@
 import EEG
 import numpy as np
 
-p = EEG.EEG('Dog_2', 'interictal', 17)
-#p = EEG.EEG('Patient_2', 'interictal', 17)
+#p = EEG.EEG('Dog_2', 'interictal', 17)
+p = EEG.EEG('Patient_2', 'interictal', 17)
 print p
 p.normalize_channels()
 
@@ -26,14 +26,17 @@ n = p.n_channels
 spacing = 5
 trace_levels = spacing*np.arange(n,0,-1)
 
-t_start  = 0
-t_length = 2000
+t_start     =  500 # in seconds  * 0 - 595
+t_duration  =   5  # in seconds
+
+s_start  = int(p.sample_rate_in_hz * t_start)
+s_length = int(p.sample_rate_in_hz * t_duration)
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
 
-ax.plot(eeg[t_start:(t_start+t_length), :] + trace_levels)
-ax.plot(np.zeros((t_length, n)) + trace_levels, '--', color='gray')
+ax.plot(eeg[s_start:(s_start+s_length), :] + trace_levels)
+ax.plot(np.zeros((s_length, n)) + trace_levels, '--', color='gray')
 
 plt.yticks(trace_levels)
 ax.set_yticklabels(p.electrode)

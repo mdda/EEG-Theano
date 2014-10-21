@@ -31,6 +31,11 @@ SpatiotemporalPrediction-2012_1-s2.0-S1525505012004763-main.pdf
   Indicates that pair-wise correlations, including time-delayed samples, worked.
   Odd sorted eigenvectors idea
   SVM trained 
+    Blocks of 15s and 30s work better than 7.5s
+    More delay scales work better (3 or more)
+    PCA components peak at ~20
+    Covariance features not very helpful
+    Typical cortial propagation times are O(0.5s)
   
 LeCun method
   Dataset available
