@@ -27,6 +27,12 @@ Data
     24 electrodes @ 5000Hz
     
 
+ToDo : 
+  2 stage training, where pre-ictal periods are split into 'active' and 'inactive' sub-periods
+    TwoStep training also mentioned in : DuanFinkXie
+
+  It is likely that the build-up to a seizure involves a stereotypic evolution of such assemblies [4], and if this is the case, a good clustering algorithm combined with a good classification algorithm should offer excellent seizure prediction performance. A literature search reveals that, to the best of our knowledge, no one has previously applied electrode clustering in conjunction with machine learning techniques to seizure prediction.
+
 SpatiotemporalPrediction-2012_1-s2.0-S1525505012004763-main.pdf
   Indicates that pair-wise correlations, including time-delayed samples, worked.
   Odd sorted eigenvectors idea
@@ -44,8 +50,15 @@ LeCun method
     5min pattern length better than 1min
     Cross-correlations had time shifts of +/- 0.5sec
     
+Dog Seizures
+  Humans may have interesting activity up to 1000Hz
+  Dogs <150Hz
+
+PreviousComp
+  ExtraTreesClassifier often used
   
   
+
 ## ROC AUC analysis/issues : 
 https://www.kaggle.com/c/seizure-prediction/forums/t/10383/leaderboard-metric-roc-auc
 
