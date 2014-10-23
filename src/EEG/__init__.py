@@ -33,6 +33,10 @@ class EEG:
     eeg -= means
     eeg /= stdev
 
+  def normalize_overall(self):
+    stdev = self.data.std() # Over all channels  -> scalar
+    self.data /= stdev
+
   def __repr__(self):
     s = "%d Electrodes : Length: %f sec, SampleRate: %f Hz, TimePeriod: %d" % (
       len(self.electrode),

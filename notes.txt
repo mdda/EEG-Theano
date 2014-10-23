@@ -3,6 +3,10 @@ http://blog.mdda.net/oss/2014/10/13/ipython-on-fedora/
 http://blog.mdda.net/oss/2014/10/19/pygtk-for-virtualenv/
 http://blog.mdda.net/oss/2014/10/20/directories-in-ipython/
 
+Additionally : hickle
+sudo yum install hdf5-devel
+(env) pip install hickle
+
 
 ipython notebook
 # and open a browser to http://localhost:8888/
@@ -23,15 +27,31 @@ import EEG
 Data
   Dog   x 5 
     16 electrodes @ 400Hz
-  Human x 2
+  Human x 2                            
     24 electrodes @ 5000Hz
     
 
 ToDo : 
   2 stage training, where pre-ictal periods are split into 'active' and 'inactive' sub-periods
     TwoStep training also mentioned in : DuanFinkXie
+    
+  Start with contiguous 15s periods
+    Later do overlapping 15s periods, starting at 1sec (or 3 sec. etc) offsets
 
   It is likely that the build-up to a seizure involves a stereotypic evolution of such assemblies [4], and if this is the case, a good clustering algorithm combined with a good classification algorithm should offer excellent seizure prediction performance. A literature search reveals that, to the best of our knowledge, no one has previously applied electrode clustering in conjunction with machine learning techniques to seizure prediction.
+  
+15sec periods map to : (i.e. from 400*16*15 floats)
+  Access to original {sd, log(sd), max, log(max)}
+  Normalize arrays
+  FFT 0 - 48 (or so), complex variables  
+  (SAVED)  (i.e. (4+48*2)*16 floats)
+  NN field has access to (4+48*2)*16 variables (simple) = 1600
+  NN also has entries that calculate upper triangle of Xi(f=a)Xj(f=b)   16*48*16*48/2  = 300k
+  This maps to 200(?) hidden units = 300k*200 = 60M weights
+
+Next stage is 200(+200sig~b)->20
+Final stage is 20(+20sig~b)->2
+
 
 SpatiotemporalPrediction-2012_1-s2.0-S1525505012004763-main.pdf
   Indicates that pair-wise correlations, including time-delayed samples, worked.
