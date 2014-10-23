@@ -13,11 +13,16 @@ print p
 
 data = p.data
 #eeg = np.rollaxis(data, 1)
+#print p.data[0:1, 0:20]
 
-signal_time  = 15.0 # in secs
-signal_length = int(p.sample_rate_in_hz * signal_time)
+signal_duration = 15.0 # in secs
 
-signal_start = 0
-z = fftpack.rfft(p.data, n=signal_length, axis=1)
+sample_length  = int(p.sample_rate_in_hz * signal_duration)
+sample_start   = int(p.sample_rate_in_hz * 0)
 
-print np.shape(z)
+z = fftpack.rfft(p.data[:, sample_start:], n=sample_length, axis=1)
+#print np.shape(z)
+#print z[0:1, 0:20]
+
+freq = fftpack.rfftfreq(n=sample_length, d=1./p.sample_rate_in_hz)
+print freq[0:20]
