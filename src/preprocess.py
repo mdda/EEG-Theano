@@ -28,7 +28,7 @@ print "Signal duration : %6.2fsec " % (signal_duration,)
 
 ## Matrix that gathers FFT entries into buckets
 ## Want buckets to be [0-0.000001 - 1.5 - 2.5 - 3.5 - ... - 48.5] Hz
-bin_array = range(0, 48)
+bin_array = np.linspace(0., 48.) 
 
 ## http://docs.scipy.org/doc/numpy/reference/routines.fft.html#module-numpy.fft
 
@@ -40,8 +40,9 @@ bin_fft = np.zeros( (len(freq), len(bin_array)) )
 for i, bn in enumerate(bin_array):
   a = np.where( (freq>(bn-0.5)) & (freq<(bn+0.5)) , 1, 0)
   bin_fft[:,i] = a
+  #print bn+0.5
 
-print bin_fft[0:20, 0:5]
+#print bin_fft[0:20, 0:5]
 
 
 
