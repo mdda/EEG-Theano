@@ -77,6 +77,10 @@ Dog Seizures
 PreviousComp
   ExtraTreesClassifier often used
   
+EEG-for-Py
+  http://nipy.org/nitime/api/generated/nitime.analysis.coherence.html
+  
+
   
 
 ## ROC AUC analysis/issues : 
@@ -152,3 +156,4 @@ Can specify lists of different data pipelines to try and lists of classifiers to
 For final classification though I would use 3000 estimators in my Random Forest which blew out run times to 2-3 hours.
 
 Having a fast SSD is also a huge benefit.
+
