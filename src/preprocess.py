@@ -27,8 +27,8 @@ print "Pow2: ", pow2
 print "Signal duration : %6.2fsec " % (signal_duration,)
 
 ## Matrix that gathers FFT entries into buckets
-## Want buckets to be [0-0.000001 - 1.5 - 2.5 - 3.5 - ... - 48.5] Hz
-bin_array = np.linspace(0., 48.) 
+## Want buckets to be [0-0.000001 - 1.5 - 2.5 - 3.5 - ... - 49.5] Hz
+bin_array = np.linspace(0., 49., num=50) 
 
 ## http://docs.scipy.org/doc/numpy/reference/routines.fft.html#module-numpy.fft
 
@@ -56,5 +56,6 @@ print z[0:1, 0:20]
 binned = np.dot(z,bin_fft)
 #print binned[0:1, :]
 print binned[0, 0]
+print np.shape(binned)
 
 #print np.sum(z[0,0:6]) # Works!
