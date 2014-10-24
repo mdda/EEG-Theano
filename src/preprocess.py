@@ -46,7 +46,7 @@ for i, bn in enumerate(bin_array):
 
 
 
-sample_start   = int(p.sample_rate_in_hz * 0)
+sample_start   = int(p.sample_rate_in_hz * 0.)  # start time in seconds
 
 #z = fftpack.rfft(p.data[:, sample_start:], n=sample_length, axis=1)
 z = np.fft.rfft(p.data[:, sample_start:], n=sample_length, axis=1)
