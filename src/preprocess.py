@@ -7,6 +7,7 @@ import hickle
 import EEG
 
 p = EEG.EEG('Dog_2', 'interictal', 17)
+p.load()
 #p = EEG.EEG('Patient_2', 'interictal', 17)
 print p
 #p.normalize_channels()
@@ -76,7 +77,11 @@ for i, start_period in enumerate(signal_period_starts):
 
 print np.shape(all_params)
 
+to_hickle = dict(
+  features=all_params,
+  signal_period_starts=signal_period_starts,
+)
+
 # Dump data, with compression
 f = "data/feat/%s/%s_%s_segment_%04d.hickle" % (p.patient, p.patient, p.desc, p.num)
-hickle.dump(all_params, f, mode='w', compression='gzip')
-
+hickle.dump(to_hickle, f, mode='w', compression='gzip')
