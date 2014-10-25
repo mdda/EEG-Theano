@@ -50,3 +50,23 @@ class EEG:
       self.timeperiod,
     )
     return s
+
+  @classmethod
+  def survey_header(_cls):
+    return ','.join([
+      'patient','desc','num',
+      'period','length_in_sec','sample_rate_in_hz', 
+      'is_test', 
+      'est0', 'est1', 'est2', 
+      'train_value0','train_value1','train_value2', 
+    ])
+
+  def survey_line(self):
+    is_test  = 1 if self.desc=='test' else 0
+    is_ictal = 1 if self.desc=='preictal' else 0
+    return "%s,%s,%d,%d,%16.8f,%16.8f,%d,-1,-1,-1,%d,-1,-1,\n" % (
+      self.patient, self.desc, self.num, 
+      self.timeperiod, self.length_in_sec, self.sample_rate_in_hz, 
+      is_test, is_ictal
+    )
+  
