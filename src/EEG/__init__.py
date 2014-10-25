@@ -4,12 +4,18 @@ import util
 
 class EEG:
   def __init__(self, _patient, _desc, _num):
-    d = util.load(_patient, _desc, _num)
-    self.data = d[0].astype(dtype=np.float32)
+    self.data=None
     
     self.patient=_patient
     self.desc   =_desc
     self.num    =_num
+    
+    self.is_test  = 1 if self.desc=='test'     else 0
+    self.is_ictal = 1 if self.desc=='preictal' else 0
+    
+  def load(self):
+    d = util.load(self.patient, self.desc, self.num)
+    self.data = d[0].astype(dtype=np.float32)
     
     #print d[1][0]
     #print type(d[0])
@@ -22,7 +28,7 @@ class EEG:
     self.n_channels = len(electrode_arr)
     self.electrode = [ e[0] for e in electrode_arr ]
 
-    self.timeperiod = None if _desc == 'test' else d[4][0][0]
+    self.timeperiod = -1 if self.desc == 'test' else d[4][0][0]
 
     
   def normalize_channels(self):
@@ -61,12 +67,10 @@ class EEG:
       'train_value0','train_value1','train_value2', 
     ])
 
-  def survey_line(self):
-    is_test  = 1 if self.desc=='test' else 0
-    is_ictal = 1 if self.desc=='preictal' else 0
+  def survey_line_initial(self):
     return "%s,%s,%d,%d,%16.8f,%16.8f,%d,-1,-1,-1,%d,-1,-1,\n" % (
       self.patient, self.desc, self.num, 
       self.timeperiod, self.length_in_sec, self.sample_rate_in_hz, 
-      is_test, is_ictal
+      self.is_test, self.is_ictal
     )
   
