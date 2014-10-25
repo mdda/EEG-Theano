@@ -7,6 +7,7 @@ import hickle
 import EEG
 
 _patient = 'Dog_2'
+_patient = 'Patient_2'
 
 d = "data/orig/%s/" % (_patient, )
 

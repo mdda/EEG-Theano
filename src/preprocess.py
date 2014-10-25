@@ -10,6 +10,7 @@ signal_duration_min = 9.0  # in secs
 signal_period_step  = 5.0  # in secs
 
 _patient = 'Dog_2'
+_patient = 'Patient_2'
 
 bin_fft, signal_duration,sample_length = None,None,None
 
@@ -92,9 +93,11 @@ def preprocess(p):
   f = "data/feat/%s/%s_%s_segment_%04d.hickle" % (p.patient, p.patient, p.desc, p.num)
   hickle.dump(to_hickle, f, mode='w', compression='gzip')
 
-
-#p = EEG.EEG('Dog_2', 'interictal', 17)
-#preprocess(p)
+if False:
+  #p = EEG.EEG('Dog_2', 'interictal', 17)
+  p = EEG.EEG('Patient_2', 'interictal', 17)
+  preprocess(p)
+  exit(1)
 
 ## Load in the survey, and do the fft thing for everything
 

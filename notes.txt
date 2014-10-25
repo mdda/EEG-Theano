@@ -22,7 +22,9 @@ mkdir -p data/feat/{Dog_1,Dog_2,Dog_3,Dog_4,Dog_5,Patient_1,Patient_2}
 ## Create the loader csv
 python src/survey.py
 
-## Preprocess all the training and test files into features (~0.5sec each => 1543 in 16min)
+## Preprocess all the training and test files into features 
+#  Dog_2     :: (~0.5sec each => 1543 in 16min)
+#  Patient_2 :: (~ 25sec each =>  211 in 89min)
 python src/preprocess.py
 
 
