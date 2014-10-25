@@ -1,5 +1,6 @@
-import util
 import numpy as np
+
+import util
 
 class EEG:
   def __init__(self, _patient, _desc, _num):

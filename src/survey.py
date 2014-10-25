@@ -1,6 +1,10 @@
-import EEG
+import os
+import hickle
 
 import numpy as np
 
-import hickle
+import EEG
 
+d = "data/orig/%s/" % (_patient, )
+
+for f in os.readdir(d)
