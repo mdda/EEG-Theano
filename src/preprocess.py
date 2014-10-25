@@ -6,6 +6,9 @@ import hickle
 
 import EEG
 
+bin_fft=None
+
+
 p = EEG.EEG('Dog_2', 'interictal', 17)
 p.load()
 #p = EEG.EEG('Patient_2', 'interictal', 17)
@@ -13,7 +16,7 @@ print p
 #p.normalize_channels()
 #p.normalize_overall()
 
-print np.shape(p.data)  # == (16, ~240k)
+print np.shape(p.data), p.data.nbytes  # == (16, ~240k)
 
 data = p.data
 #eeg = np.rollaxis(data, 1)
@@ -22,32 +25,33 @@ data = p.data
 signal_duration_min = 9.0  # in secs
 signal_period_step  = 5.0  # in secs
 
-pow2 = np.log2(p.sample_rate_in_hz * signal_duration_min)
+if bin_fft is None :
+  pow2 = np.log2(p.sample_rate_in_hz * signal_duration_min)
 
-sample_length  = int(2.0 ** (int(pow2)+1))   # in samples, rounds up  
-signal_duration = sample_length/p.sample_rate_in_hz
-print "Pow2: ", pow2
-print "Signal duration : %6.2fsec = %d samples " % (signal_duration, sample_length, )
+  sample_length  = int(2.0 ** (int(pow2)+1))   # in samples, rounds up  
+  signal_duration = sample_length/p.sample_rate_in_hz
+  print "Pow2: ", pow2
+  print "Signal duration : %6.2fsec = %d samples " % (signal_duration, sample_length, )
 
-## Matrix that gathers FFT entries into buckets
-## Want buckets to be [0-0.000001 - 1.5 - 2.5 - 3.5 - ... - 49.5] Hz
-bin_array = np.linspace(0., 49., num=50) 
+  ## Matrix that gathers FFT entries into buckets
+  ## Want buckets to be [0-0.000001 - 1.5 - 2.5 - 3.5 - ... - 49.5] Hz
+  bin_array = np.linspace(0., 49., num=50) 
 
-## http://docs.scipy.org/doc/numpy/reference/routines.fft.html#module-numpy.fft
+  ## http://docs.scipy.org/doc/numpy/reference/routines.fft.html#module-numpy.fft
 
-#freq = fftpack.rfftfreq(n=sample_length, d=1./p.sample_rate_in_hz)
-freq = np.fft.rfftfreq(n=sample_length, d=1./p.sample_rate_in_hz)
-#print freq[0:100]
+  #freq = fftpack.rfftfreq(n=sample_length, d=1./p.sample_rate_in_hz)
+  freq = np.fft.rfftfreq(n=sample_length, d=1./p.sample_rate_in_hz)
+  #print freq[0:100]
 
-bin_fft = np.zeros( (len(freq), len(bin_array)) )
-for i, bn in enumerate(bin_array):
-  bn_lower=(bin_array[i-1]+bin_array[i+0])/2. if i>0 else bn-0.5
-  bn_upper=(bin_array[i+0]+bin_array[i+1])/2. if i<len(bin_array)-1 else bn+0.5
-  a = np.where( (freq>bn_lower) & (freq<=bn_upper) , 1, 0)
-  bin_fft[:,i] = a
-  #print bn_lower, bn, bn_upper
+  bin_fft = np.zeros( (len(freq), len(bin_array)) )
+  for i, bn in enumerate(bin_array):
+    bn_lower=(bin_array[i-1]+bin_array[i+0])/2. if i>0 else bn-0.5
+    bn_upper=(bin_array[i+0]+bin_array[i+1])/2. if i<len(bin_array)-1 else bn+0.5
+    a = np.where( (freq>bn_lower) & (freq<=bn_upper) , 1, 0)
+    bin_fft[:,i] = a
+    #print bn_lower, bn, bn_upper
 
-#print bin_fft[0:20, 0:5]
+  #print bin_fft[0:20, 0:5]
 
 
 ## Now, take whole period, and find the start times in seconds
@@ -75,7 +79,7 @@ for i, start_period in enumerate(signal_period_starts):
 
   all_params[i,:]=params
 
-print np.shape(all_params)
+print np.shape(all_params), all_params.nbytes
 
 to_hickle = dict(
   features=all_params,

@@ -13,6 +13,10 @@ class EEG:
     self.is_test  = 1 if self.desc=='test'     else 0
     self.is_ictal = 1 if self.desc=='preictal' else 0
     
+    self.est0 = self.est1 = self.est2 = -1.
+    self.train0 = float(self.is_ictal)
+    self.train1 = self.train2 = -1.
+    
   def load(self):
     d = util.load(self.patient, self.desc, self.num)
     self.data = d[0].astype(dtype=np.float32)
@@ -64,13 +68,17 @@ class EEG:
       'period','length_in_sec','sample_rate_in_hz', 
       'is_test', 
       'est0', 'est1', 'est2', 
-      'train_value0','train_value1','train_value2', 
+      'train0','train1','train2', 
     ])
 
   def survey_line_initial(self):
-    return "%s,%s,%d,%d,%16.8f,%16.8f,%d,-1,-1,-1,%d,-1,-1,\n" % (
+    return ("%s,%s,%d," +"%d,%16.8f,%16.8f,"+
+            "%d,"+
+            "%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,\n") % (
       self.patient, self.desc, self.num, 
       self.timeperiod, self.length_in_sec, self.sample_rate_in_hz, 
-      self.is_test, self.is_ictal
+      self.is_test, 
+      self.est0, self.est1, self.est2,
+      self.train0, self.train1,self.train2,
     )
   
