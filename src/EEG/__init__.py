@@ -65,13 +65,13 @@ class EEG:
   def survey_header(_cls):
     return ','.join([
       'patient','desc','num',
-      'period','length_in_sec','sample_rate_in_hz', 
+      'timeperiod','length_in_sec','sample_rate_in_hz', 
       'is_test', 
       'est0', 'est1', 'est2', 
       'train0','train1','train2', 
     ])
 
-  def survey_line_initial(self):
+  def survey_line_write(self):
     return ("%s,%s,%d," +"%d,%16.8f,%16.8f,"+
             "%d,"+
             "%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,\n") % (
@@ -82,3 +82,11 @@ class EEG:
       self.train0, self.train1,self.train2,
     )
   
+  def survey_line_read(self, line):
+    #print line 
+    i = line.split(",")
+    self.patient, self.desc, self.num = i[0], i[1], int(i[2])
+    self.timeperiod, self.length_in_sec, self.sample_rate_in_hz = float(i[3]), float(i[4]), float(i[5])
+    self.is_test = int(i[6])
+    self.est0, self.est1, self.est2 = float(i[7]), float(i[8]), float(i[9])
+    self.train0, self.train1, self.train2 = float(i[10]), float(i[11]), float(i[12])

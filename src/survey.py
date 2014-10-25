@@ -23,6 +23,6 @@ for f in sorted(os.listdir(d)):
   
   p = EEG.EEG(_patient, desc, num)
   p.load()
-  csv.write(p.survey_line_initial())
+  csv.write(p.survey_line_write())
 
 csv.close()

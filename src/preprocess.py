@@ -9,7 +9,10 @@ import EEG
 signal_duration_min = 9.0  # in secs
 signal_period_step  = 5.0  # in secs
 
-bin_fft=None
+_patient = 'Dog_2'
+
+bin_fft, signal_duration,sample_length = None,None,None
+
 
 def preprocess(p):
   p.load()
@@ -24,7 +27,7 @@ def preprocess(p):
   #eeg = np.rollaxis(data, 1)
   #print p.data[0:1, 0:20]
 
-  global bin_fft
+  global bin_fft, signal_duration, sample_length
   if bin_fft is None :
     pow2 = np.log2(p.sample_rate_in_hz * signal_duration_min)
 
@@ -57,7 +60,7 @@ def preprocess(p):
   signal_period_starts = np.arange( start=0, stop=p.length_in_sec-signal_duration, step=signal_period_step )
   #print signal_period_starts
 
-  param_length = p.n_channels * len(bin_array)
+  param_length = p.n_channels * np.shape(bin_fft)[1] # len(bin_array)
   all_params = np.zeros( (len(signal_period_starts), param_length), dtype=np.complex64 )
 
   for i, start_period in enumerate(signal_period_starts):
@@ -89,6 +92,19 @@ def preprocess(p):
   f = "data/feat/%s/%s_%s_segment_%04d.hickle" % (p.patient, p.patient, p.desc, p.num)
   hickle.dump(to_hickle, f, mode='w', compression='gzip')
 
-p = EEG.EEG('Dog_2', 'interictal', 17)
 
-preprocess(p)
+#p = EEG.EEG('Dog_2', 'interictal', 17)
+#preprocess(p)
+
+## Load in the survey, and do the fft thing for everything
+
+d = "data/orig/%s/" % (_patient, )
+
+csv=open("data/survey.%s.csv" % (_patient,), 'r')
+headers = csv.readline()
+for line in csv.readlines():
+  p = EEG.EEG(_patient, '', '')  # Nonsense entries
+  p.survey_line_read(line)
+  
+  preprocess(p)
+
