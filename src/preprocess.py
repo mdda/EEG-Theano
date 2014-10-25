@@ -4,7 +4,7 @@ import numpy as np
 #import scipy as sp
 #from scipy import fftpack
 
-import math
+import hickle
 
 p = EEG.EEG('Dog_2', 'interictal', 17)
 #p = EEG.EEG('Patient_2', 'interictal', 17)
@@ -18,13 +18,15 @@ data = p.data
 #eeg = np.rollaxis(data, 1)
 #print p.data[0:1, 0:20]
 
-signal_duration_min = 9.0 # in secs
-pow2 = math.log(p.sample_rate_in_hz * signal_duration_min)/math.log(2.)
+signal_duration_min = 9.0  # in secs
+signal_period_step  = 5.0  # in secs
 
-sample_length  = int(2.0 ** (int(pow2)+1))   # Rounds up  
+pow2 = np.log2(p.sample_rate_in_hz * signal_duration_min)
+
+sample_length  = int(2.0 ** (int(pow2)+1))   # in samples, rounds up  
 signal_duration = sample_length/p.sample_rate_in_hz
-#print "Pow2: ", pow2
-print "Signal duration : %6.2fsec " % (signal_duration,)
+print "Pow2: ", pow2
+print "Signal duration : %6.2fsec = %d samples " % (signal_duration, sample_length, )
 
 ## Matrix that gathers FFT entries into buckets
 ## Want buckets to be [0-0.000001 - 1.5 - 2.5 - 3.5 - ... - 49.5] Hz
@@ -47,18 +49,29 @@ for i, bn in enumerate(bin_array):
 #print bin_fft[0:20, 0:5]
 
 
+## Now, take whole period, and find the start times in seconds
+signal_period_starts = np.arange( start=0, stop=p.length_in_sec-signal_duration, step=signal_period_step )
+#print signal_period_starts
 
-sample_start   = int(p.sample_rate_in_hz * 0.)  # start time in seconds
+param_length = p.n_channels * len(bin_array)
+all_params = np.zeros( (len(signal_period_starts), param_length), dtype=np.complex64 )
 
-#z = fftpack.rfft(p.data[:, sample_start:], n=sample_length, axis=1)
-fft_raw = np.fft.rfft(p.data[:, sample_start:], n=sample_length, axis=1)
-#print np.shape(fft_raw)
-#print fft_raw[0:1, 0:20]
+for i, start_period in enumerate(signal_period_starts):
+  sample_start   = int(p.sample_rate_in_hz * start_period)  # start time in seconds
 
-binned = np.dot(fft_raw,bin_fft)
-#print binned[0:1, :]
-print binned[0, 0]
-#print np.shape(binned)
+  #z = fftpack.rfft(p.data[:, sample_start:], n=sample_length, axis=1)
+  fft_raw = np.fft.rfft(p.data[:, sample_start:], n=sample_length, axis=1)
+  #print np.shape(fft_raw)
+  #print fft_raw[0:1, 0:20]
 
-print np.sum(fft_raw[0,0:6]) # Works!
+  binned = np.dot(fft_raw,bin_fft)
+  #print np.shape(binned)
+  #print binned[0:1, :] 
+  #print binned[0, 0]           # Check that first bin is equal to first sums...
+  #print np.sum(fft_raw[0,0:6]) # Works!
 
+  params = np.log(binned.ravel())
+
+  all_params[i,:]=params
+
+all_params
