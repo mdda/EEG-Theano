@@ -23,7 +23,7 @@ pow2 = math.log(p.sample_rate_in_hz * signal_duration_min)/math.log(2.)
 
 sample_length  = int(2.0 ** (int(pow2)+1))   # Rounds up  
 signal_duration = sample_length/p.sample_rate_in_hz
-print "Pow2: ", pow2
+#print "Pow2: ", pow2
 print "Signal duration : %6.2fsec " % (signal_duration,)
 
 ## Matrix that gathers FFT entries into buckets
@@ -34,7 +34,7 @@ bin_array = np.linspace(0., 49., num=50)
 
 #freq = fftpack.rfftfreq(n=sample_length, d=1./p.sample_rate_in_hz)
 freq = np.fft.rfftfreq(n=sample_length, d=1./p.sample_rate_in_hz)
-print freq[0:100]
+#print freq[0:100]
 
 bin_fft = np.zeros( (len(freq), len(bin_array)) )
 for i, bn in enumerate(bin_array):
@@ -50,12 +50,12 @@ sample_start   = int(p.sample_rate_in_hz * 0.)  # start time in seconds
 
 #z = fftpack.rfft(p.data[:, sample_start:], n=sample_length, axis=1)
 z = np.fft.rfft(p.data[:, sample_start:], n=sample_length, axis=1)
-print np.shape(z)
-print z[0:1, 0:20]
+#print np.shape(z)
+#print z[0:1, 0:20]
 
 binned = np.dot(z,bin_fft)
 #print binned[0:1, :]
 print binned[0, 0]
-print np.shape(binned)
+#print np.shape(binned)
 
-#print np.sum(z[0,0:6]) # Works!
+print np.sum(z[0,0:6]) # Works!
