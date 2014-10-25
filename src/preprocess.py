@@ -12,7 +12,7 @@ print p
 #p.normalize_channels()
 #p.normalize_overall()
 
-#print np.shape(p.data)  == (16, ~240k)
+print np.shape(p.data)  # == (16, ~240k)
 
 data = p.data
 #eeg = np.rollaxis(data, 1)
