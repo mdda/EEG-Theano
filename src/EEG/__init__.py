@@ -2,9 +2,13 @@ import util
 import numpy as np
 
 class EEG:
-  def __init__(self, _patient, _type, _num):
-    d = util.load(_patient, _type, _num)
+  def __init__(self, _patient, _desc, _num):
+    d = util.load(_patient, _desc, _num)
     self.data = d[0].astype(dtype=np.float32)
+    
+    self.patient=_patient
+    self.desc   =_desc
+    self.num    =_num
     
     #print d[1][0]
     #print type(d[0])
@@ -17,7 +21,7 @@ class EEG:
     self.n_channels = len(electrode_arr)
     self.electrode = [ e[0] for e in electrode_arr ]
 
-    self.timeperiod = None if _type == 'test' else d[4][0][0]
+    self.timeperiod = None if _desc == 'test' else d[4][0][0]
 
     
   def normalize_channels(self):

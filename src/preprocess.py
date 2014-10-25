@@ -74,4 +74,7 @@ for i, start_period in enumerate(signal_period_starts):
 
   all_params[i,:]=params
 
-all_params
+# Dump data, with compression
+f = "data/feat/%s/%s_%s_segment_%04d.hickle" % (p.patient, p.patient, p.desc, p.num)
+hickle.dump(all_params, f, mode='w', compression='gzip')
+
