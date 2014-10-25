@@ -38,9 +38,11 @@ freq = np.fft.rfftfreq(n=sample_length, d=1./p.sample_rate_in_hz)
 
 bin_fft = np.zeros( (len(freq), len(bin_array)) )
 for i, bn in enumerate(bin_array):
-  a = np.where( (freq>(bn-0.5)) & (freq<(bn+0.5)) , 1, 0)
+  bn_lower=(bin_array[i-1]+bin_array[i+0])/2. if i>0 else bn-0.5
+  bn_upper=(bin_array[i+0]+bin_array[i+1])/2. if i<len(bin_array)-1 else bn+0.5
+  a = np.where( (freq>bn_lower) & (freq<=bn_upper) , 1, 0)
   bin_fft[:,i] = a
-  #print bn+0.5
+  #print bn_lower, bn, bn_upper
 
 #print bin_fft[0:20, 0:5]
 
@@ -49,13 +51,14 @@ for i, bn in enumerate(bin_array):
 sample_start   = int(p.sample_rate_in_hz * 0.)  # start time in seconds
 
 #z = fftpack.rfft(p.data[:, sample_start:], n=sample_length, axis=1)
-z = np.fft.rfft(p.data[:, sample_start:], n=sample_length, axis=1)
-#print np.shape(z)
-#print z[0:1, 0:20]
+fft_raw = np.fft.rfft(p.data[:, sample_start:], n=sample_length, axis=1)
+#print np.shape(fft_raw)
+#print fft_raw[0:1, 0:20]
 
-binned = np.dot(z,bin_fft)
+binned = np.dot(fft_raw,bin_fft)
 #print binned[0:1, :]
 print binned[0, 0]
 #print np.shape(binned)
 
-print np.sum(z[0,0:6]) # Works!
+print np.sum(fft_raw[0,0:6]) # Works!
+
