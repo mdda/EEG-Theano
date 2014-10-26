@@ -1,8 +1,14 @@
 .geany/session.ini
 
 data/
+misc/
 
 env/
 *.pyc
 
 KagglePrevious
+
+notebooks/.ipynb_checkpoints/
+
+# This is just for reference
+src/logistic_sgd.py
