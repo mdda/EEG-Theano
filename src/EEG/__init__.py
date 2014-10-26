@@ -17,6 +17,8 @@ class EEG:
     self.train0 = float(self.is_ictal)
     self.train1 = self.train2 = -1.
     
+    self.electrode=[]
+    
   def load(self):
     d = util.load(self.patient, self.desc, self.num)
     self.data = d[0].astype(dtype=np.float32)
@@ -53,7 +55,8 @@ class EEG:
     self.data /= stdev
 
   def __repr__(self):
-    s = "%d Electrodes : Length: %f sec, SampleRate: %f Hz, TimePeriod: %d" % (
+    s = "%d num, %d Electrodes : Length: %f sec, SampleRate: %f Hz, TimePeriod: %d" % (
+      self.num,
       len(self.electrode),
       self.length_in_sec,
       self.sample_rate_in_hz,

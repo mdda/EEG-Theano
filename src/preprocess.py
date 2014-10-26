@@ -14,7 +14,6 @@ _patient = 'Patient_2'
 
 bin_fft, signal_duration,sample_length = None,None,None
 
-
 def preprocess(p):
   p.load()
   #p = EEG.EEG('Patient_2', 'interictal', 17)
@@ -94,20 +93,35 @@ def preprocess(p):
   hickle.dump(to_hickle, f, mode='w', compression='gzip')
 
 if False:
-  #p = EEG.EEG('Dog_2', 'interictal', 17)
-  p = EEG.EEG('Patient_2', 'interictal', 17)
-  preprocess(p)
-  exit(1)
+  if False:  # Just do one sample
+    p = EEG.EEG(_patient, 'interictal', 17)
+    preprocess(p)
+    exit(1)
 
-## Load in the survey, and do the fft thing for everything
+  if True:  # Load in the survey, and do the fft thing for everything
+    #d = "data/orig/%s/" % (_patient, )
+    csv=open("data/survey.%s.csv" % (_patient,), 'r')
+    headers = csv.readline()
+    for line in csv.readlines():
+      p = EEG.EEG(_patient, '', '')  # Nonsense entries
+      p.survey_line_read(line)
+      
+      preprocess(p)
 
-d = "data/orig/%s/" % (_patient, )
-
-csv=open("data/survey.%s.csv" % (_patient,), 'r')
-headers = csv.readline()
-for line in csv.readlines():
-  p = EEG.EEG(_patient, '', '')  # Nonsense entries
-  p.survey_line_read(line)
+if True:
+  # concatinate entries
+  train_data = True #and False
   
-  preprocess(p)
-
+  if True:
+    csv=open("data/survey.%s.csv" % (_patient,), 'r')
+    headers = csv.readline()
+    for line in csv.readlines():
+      p = EEG.EEG(_patient, '', '')  # Nonsense entries
+      p.survey_line_read(line)
+      
+      if (p.is_test==0) != train_data:
+        continue
+      
+      print p
+      
+      
