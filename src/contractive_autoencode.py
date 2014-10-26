@@ -38,20 +38,20 @@ import os
 import sys
 import time
 
-import numpy
+import hickle
+
+import numpy as np
 
 import theano
 import theano.tensor as T
 
-
-from logistic_sgd import load_data
-from utils import tile_raster_images
-
-try:
-    import PIL.Image as Image
-except ImportError:
-    import Image
-
+#from logistic_sgd import load_data
+#from utils import tile_raster_images
+#
+#try:
+#    import PIL.Image as Image
+#except ImportError:
+#    import Image
 
 class cA(object):
     """ Contractive Auto-Encoder class (cA)
@@ -136,10 +136,10 @@ class cA(object):
             # 4*sqrt(6./(n_hidden+n_visible))the output of uniform if
             # converted using asarray to dtype
             # theano.config.floatX so that the code is runable on GPU
-            initial_W = numpy.asarray(
+            initial_W = np.asarray(
                 numpy_rng.uniform(
-                    low=-4 * numpy.sqrt(6. / (n_hidden + n_visible)),
-                    high=4 * numpy.sqrt(6. / (n_hidden + n_visible)),
+                    low=-4 * np.sqrt(6. / (n_hidden + n_visible)),
+                    high=4 * np.sqrt(6. / (n_hidden + n_visible)),
                     size=(n_visible, n_hidden)
                 ),
                 dtype=theano.config.floatX
@@ -147,12 +147,12 @@ class cA(object):
             W = theano.shared(value=initial_W, name='W', borrow=True)
 
         if not bvis:
-            bvis = theano.shared(value=numpy.zeros(n_visible,
+            bvis = theano.shared(value=np.zeros(n_visible,
                                                    dtype=theano.config.floatX),
                                  borrow=True)
 
         if not bhid:
-            bhid = theano.shared(value=numpy.zeros(n_hidden,
+            bhid = theano.shared(value=np.zeros(n_hidden,
                                                    dtype=theano.config.floatX),
                                  name='b',
                                  borrow=True)
@@ -265,7 +265,7 @@ def test_cA(learning_rate=0.01, training_epochs=20,
     #        BUILDING THE MODEL        #
     ####################################
 
-    rng = numpy.random.RandomState(123)
+    rng = np.random.RandomState(123)
 
     ca = cA(numpy_rng=rng, input=x,
             n_visible=28 * 28, n_hidden=500, n_batchsize=batch_size)
@@ -295,9 +295,9 @@ def test_cA(learning_rate=0.01, training_epochs=20,
         for batch_index in xrange(n_train_batches):
             c.append(train_ca(batch_index))
 
-        c_array = numpy.vstack(c)
-        print 'Training epoch %d, reconstruction cost ' % epoch, numpy.mean(
-            c_array[0]), ' jacobian norm ', numpy.mean(numpy.sqrt(c_array[1]))
+        c_array = np.vstack(c)
+        print 'Training epoch %d, reconstruction cost ' % epoch, np.mean(
+            c_array[0]), ' jacobian norm ', np.mean(np.sqrt(c_array[1]))
 
     end_time = time.clock()
 
