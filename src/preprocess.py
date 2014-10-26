@@ -93,12 +93,13 @@ def preprocess(p):
   hickle.dump(to_hickle, f, mode='w', compression='gzip')
 
 if False:
-  if False:  # Just do one sample
-    p = EEG.EEG(_patient, 'interictal', 17)
+  if True:  # Just do one sample
+    #p = EEG.EEG(_patient, 'interictal', 17)
+    p = EEG.EEG(_patient, 'preictal', 18)
     preprocess(p)
     exit(1)
 
-  if True:  # Load in the survey, and do the fft thing for everything
+  if False:  # Load in the survey, and do the fft thing for everything
     #d = "data/orig/%s/" % (_patient, )
     csv=open("data/survey.%s.csv" % (_patient,), 'r')
     headers = csv.readline()
@@ -112,16 +113,35 @@ if True:
   # concatinate entries
   train_data = True #and False
   
-  if True:
-    csv=open("data/survey.%s.csv" % (_patient,), 'r')
-    headers = csv.readline()
-    for line in csv.readlines():
-      p = EEG.EEG(_patient, '', '')  # Nonsense entries
-      p.survey_line_read(line)
-      
-      if (p.is_test==0) != train_data:
-        continue
-      
-      print p
-      
-      
+  d=[]
+  signal_period_starts = None
+  
+  csv=open("data/survey.%s.csv" % (_patient,), 'r')
+  headers = csv.readline()
+  for line in csv.readlines():  # [0:5]:
+    p = EEG.EEG(_patient, '', '')  # Nonsense entries
+    p.survey_line_read(line)
+    
+    if (p.is_test==0) != train_data:
+      continue
+    print p
+    
+    #p.load()
+    f_in = "data/feat/%s/%s_%s_segment_%04d.hickle" % (p.patient, p.patient, p.desc, p.num)
+    
+    from_hickle = hickle.load(f_in)
+    d.append(from_hickle['features'])  
+    if signal_period_starts is None:
+      signal_period_starts = from_hickle['signal_period_starts']
+
+    
+  all_features = np.vstack(tuple(d))
+  print np.shape(all_features)
+  
+  to_hickle = dict(
+    features=all_features,
+    signal_period_starts=signal_period_starts,
+  )
+  
+  f_out = "data/feat/%s/%s_%s_input.hickle" % (p.patient, p.patient, ("train" if train_data else "test"), )
+  hickle.dump(to_hickle, f_out, mode='w', compression='gzip')
