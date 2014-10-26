@@ -1,4 +1,10 @@
-"""This tutorial introduces Contractive auto-encoders (cA) using Theano.
+"""
+ ## Original code sourced from : https://raw.githubusercontent.com/lisa-lab/DeepLearningTutorials/master/code/cA.py
+ 
+ ## Reference : http://www-etud.iro.umontreal.ca/~rifaisal/
+ ## http://www.icml-2011.org/papers/455_icmlpaper.pdf
+ 
+ This tutorial introduces Contractive auto-encoders (cA) using Theano.
 
  They are based on auto-encoders as the ones used in Bengio et
  al. 2007.  An autoencoder takes an input x and first maps it to a
