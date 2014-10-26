@@ -143,5 +143,5 @@ if True:
     signal_period_starts=signal_period_starts,
   )
   
-  f_out = "data/feat/%s/%s_%s_input.hickle" % (p.patient, p.patient, ("train" if train_data else "test"), )
+  f_out = "data/feat/%s/%s_%s_input.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
   hickle.dump(to_hickle, f_out, mode='w', compression='gzip')

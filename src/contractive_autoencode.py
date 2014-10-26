@@ -1,8 +1,10 @@
 """
- ## Original code sourced from : https://raw.githubusercontent.com/lisa-lab/DeepLearningTutorials/master/code/cA.py
+ ## Original code sourced from : 
+ ##   https://github.com/lisa-lab/DeepLearningTutorials/blob/master/code/cA.py
  
- ## Reference : http://www-etud.iro.umontreal.ca/~rifaisal/
- ## http://www.icml-2011.org/papers/455_icmlpaper.pdf
+ ## References : 
+ ##   http://www-etud.iro.umontreal.ca/~rifaisal/
+ ##   http://www.icml-2011.org/papers/455_icmlpaper.pdf
  
  This tutorial introduces Contractive auto-encoders (cA) using Theano.
 
@@ -235,23 +237,21 @@ class cA(object):
         return (cost, updates)
 
 
-def test_cA(learning_rate=0.01, training_epochs=20,
-            dataset='mnist.pkl.gz',
-            batch_size=10, output_folder='cA_plots', contraction_level=.1):
+def train_using_Ca(learning_rate=0.01, training_epochs=20,
+                    dataset='FILL_IN_DATASET',
+                    batch_size=10, 
+                    contraction_level=.1):
     """
-    This demo is tested on MNIST
-
     :type learning_rate: float
-    :param learning_rate: learning rate used for training the contracting
-                          AutoEncoder
+    :param learning_rate: learning rate used for training the contracting AutoEncoder
 
     :type training_epochs: int
     :param training_epochs: number of epochs used for training
 
     :type dataset: string
     :param dataset: path to the picked dataset
-
     """
+    
     datasets = load_data(dataset)
     train_set_x, train_set_y = datasets[0]
 
@@ -262,9 +262,6 @@ def test_cA(learning_rate=0.01, training_epochs=20,
     index = T.lscalar()    # index to a [mini]batch
     x = T.matrix('x')  # the data is presented as rasterized images
 
-    if not os.path.isdir(output_folder):
-        os.makedirs(output_folder)
-    os.chdir(output_folder)
     ####################################
     #        BUILDING THE MODEL        #
     ####################################
@@ -309,15 +306,36 @@ def test_cA(learning_rate=0.01, training_epochs=20,
 
     print >> sys.stderr, ('The code for file ' + os.path.split(__file__)[1] +
                           ' ran for %.2fm' % ((training_time) / 60.))
-    image = Image.fromarray(tile_raster_images(
-        X=ca.W.get_value(borrow=True).T,
-        img_shape=(28, 28), tile_shape=(10, 10),
-        tile_spacing=(1, 1)))
+                          
+    #image = Image.fromarray(tile_raster_images(
+    #    X=ca.W.get_value(borrow=True).T,
+    #    img_shape=(28, 28), tile_shape=(10, 10),
+    #    tile_spacing=(1, 1)))
+    #
+    
+    ## Save weight matrix
 
-    image.save('cae_filters.png')
-
-    os.chdir('../')
-
-
+def test_using_Ca(dataset='FILL_IN_DATASET', hidden_output='FILL_IN_HIDDEN', weight_file='FILL_IN_WEIGHTS'):
+  pass
+  
+  
 if __name__ == '__main__':
-    test_cA()
+  
+  _patient = 'Dog_2'
+  _patient = 'Patient_2'
+  
+  train_data = True # and False
+  
+  ## Two modes : Test and Train
+  f_in  = "data/feat/%s/%s_%s_input.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
+  f_out = "data/hidden0/%s/%s_%s_hidden.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
+  
+  ## Load input file
+  ## Load weight matrix (maybe)
+  
+  if train_data:
+    train_using_Ca(dataset=f_in)
+  else:
+    test_using_Ca(dataset=f_in, hidden_output=f_out, weights=None)
+
+  
