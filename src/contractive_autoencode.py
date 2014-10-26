@@ -129,6 +129,7 @@ class cA(object):
         self.n_visible = n_visible
         self.n_hidden = n_hidden
         self.n_batchsize = n_batchsize
+        
         # note : W' was written as `W_prime` and b' as `b_prime`
         if not W:
             # W is initialized with `initial_W` which is uniformely sampled
@@ -147,21 +148,22 @@ class cA(object):
             W = theano.shared(value=initial_W, name='W', borrow=True)
 
         if not bvis:
-            bvis = theano.shared(value=np.zeros(n_visible,
-                                                   dtype=theano.config.floatX),
+            bvis = theano.shared(value=np.zeros(n_visible, dtype=theano.config.floatX),
                                  borrow=True)
 
         if not bhid:
-            bhid = theano.shared(value=np.zeros(n_hidden,
-                                                   dtype=theano.config.floatX),
+            bhid = theano.shared(value=np.zeros(n_hidden, dtype=theano.config.floatX),
                                  name='b',
                                  borrow=True)
 
         self.W = W
+        
         # b corresponds to the bias of the hidden
         self.b = bhid
+        
         # b_prime corresponds to the bias of the visible
         self.b_prime = bvis
+        
         # tied weights, therefore W_prime is W transpose
         self.W_prime = self.W.T
 
@@ -203,6 +205,7 @@ class cA(object):
         y = self.get_hidden_values(self.x)
         z = self.get_reconstructed_input(y)
         J = self.get_jacobian(y, self.W)
+        
         # note : we sum over the size of a datapoint; if we are using
         #        minibatches, L will be a vector, with one entry per
         #        example in minibatch
@@ -223,6 +226,7 @@ class cA(object):
         # compute the gradients of the cost of the `cA` with respect
         # to its parameters
         gparams = T.grad(cost, self.params)
+        
         # generate the list of updates
         updates = []
         for param, gparam in zip(self.params, gparams):
