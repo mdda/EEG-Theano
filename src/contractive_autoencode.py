@@ -236,86 +236,102 @@ class cA(object):
 
         return (cost, updates)
 
+def data_shared(data_x, borrow=True):
+  """ Function that loads the dataset into shared variables
+
+  The reason we store our dataset in shared variables is to allow
+  Theano to copy it into the GPU memory (when code is run on GPU).
+  Since copying data into the GPU is slow, copying a minibatch everytime
+  is needed (the default behaviour if the data is not in a shared
+  variable) would lead to a large decrease in performance.
+  """
+  shared_x = theano.shared(numpy.asarray(data_x.view(dtype=np.float32),
+                                         dtype=theano.config.floatX),
+                           borrow=borrow)
+  return shared_x
 
 def train_using_Ca(learning_rate=0.01, training_epochs=20,
-                    dataset='FILL_IN_DATASET',
+                    data_x='FILL_IN_DATASET', weights=None, 
                     batch_size=10, 
                     contraction_level=.1):
-    """
-    :type learning_rate: float
-    :param learning_rate: learning rate used for training the contracting AutoEncoder
 
-    :type training_epochs: int
-    :param training_epochs: number of epochs used for training
+  """
+  :type learning_rate: float
+  :param learning_rate: learning rate used for training the contracting AutoEncoder
 
-    :type dataset: string
-    :param dataset: path to the picked dataset
-    """
-    
-    datasets = load_data(dataset)
-    train_set_x, train_set_y = datasets[0]
+  :type training_epochs: int
+  :param training_epochs: number of epochs used for training
 
-    # compute number of minibatches for training, validation and testing
-    n_train_batches = train_set_x.get_value(borrow=True).shape[0] / batch_size
+  :type dataset: string
+  :param dataset: path to the picked dataset
+  """
+  
+  datasets = load_data(dataset)
+  train_set_x, train_set_y = datasets[0]
 
-    # allocate symbolic variables for the data
-    index = T.lscalar()    # index to a [mini]batch
-    x = T.matrix('x')  # the data is presented as rasterized images
+  # compute number of minibatches for training, validation and testing
+  n_train_batches = train_set_x.get_value(borrow=True).shape[0] / batch_size
 
-    ####################################
-    #        BUILDING THE MODEL        #
-    ####################################
+  # allocate symbolic variables for the data
+  index = T.lscalar()    # index to a [mini]batch
+  x = T.matrix('x')  # the data is presented as rasterized images
 
-    rng = np.random.RandomState(123)
+  ####################################
+  #        BUILDING THE MODEL        #
+  ####################################
 
-    ca = cA(numpy_rng=rng, input=x,
-            n_visible=28 * 28, n_hidden=500, n_batchsize=batch_size)
+  rng = np.random.RandomState(123)
 
-    cost, updates = ca.get_cost_updates(contraction_level=contraction_level,
-                                        learning_rate=learning_rate)
+  ca = cA(numpy_rng=rng, input=x,
+          n_visible=28 * 28, n_hidden=500, n_batchsize=batch_size)
 
-    train_ca = theano.function(
-        [index],
-        [T.mean(ca.L_rec), ca.L_jacob],
-        updates=updates,
-        givens={
-            x: train_set_x[index * batch_size: (index + 1) * batch_size]
-        }
-    )
+  cost, updates = ca.get_cost_updates(contraction_level=contraction_level,
+                                      learning_rate=learning_rate)
 
-    start_time = time.clock()
+  train_ca = theano.function(
+      [index],
+      [T.mean(ca.L_rec), ca.L_jacob],
+      updates=updates,
+      givens={
+          x: train_set_x[index * batch_size: (index + 1) * batch_size]
+      }
+  )
 
-    ############
-    # TRAINING #
-    ############
+  start_time = time.clock()
 
-    # go through training epochs
-    for epoch in xrange(training_epochs):
-        # go through trainng set
-        c = []
-        for batch_index in xrange(n_train_batches):
-            c.append(train_ca(batch_index))
+  ############
+  # TRAINING #
+  ############
 
-        c_array = np.vstack(c)
-        print 'Training epoch %d, reconstruction cost ' % epoch, np.mean(
-            c_array[0]), ' jacobian norm ', np.mean(np.sqrt(c_array[1]))
+  # go through training epochs
+  for epoch in xrange(training_epochs):
+    # go through trainng set
+    c = []
+    for batch_index in xrange(n_train_batches):
+      c.append(train_ca(batch_index))
 
-    end_time = time.clock()
+    c_array = np.vstack(c)
+    print 'Training epoch %d, reconstruction cost ' % epoch, np.mean(
+      c_array[0]), ' jacobian norm ', np.mean(np.sqrt(c_array[1]))
 
-    training_time = (end_time - start_time)
+  end_time = time.clock()
 
-    print >> sys.stderr, ('The code for file ' + os.path.split(__file__)[1] +
-                          ' ran for %.2fm' % ((training_time) / 60.))
-                          
-    #image = Image.fromarray(tile_raster_images(
-    #    X=ca.W.get_value(borrow=True).T,
-    #    img_shape=(28, 28), tile_shape=(10, 10),
-    #    tile_spacing=(1, 1)))
-    #
-    
-    ## Save weight matrix
+  training_time = (end_time - start_time)
 
-def test_using_Ca(dataset='FILL_IN_DATASET', hidden_output='FILL_IN_HIDDEN', weight_file='FILL_IN_WEIGHTS'):
+  print >> sys.stderr, ('The code for file ' + os.path.split(__file__)[1] +
+                        ' ran for %.2fm' % ((training_time) / 60.))
+                        
+  #image = Image.fromarray(tile_raster_images(
+  #    X=ca.W.get_value(borrow=True).T,
+  #    img_shape=(28, 28), tile_shape=(10, 10),
+  #    tile_spacing=(1, 1)))
+  #
+  
+  ## Save weight matrix
+
+
+
+def test_using_Ca(data_x='FILL_IN_DATASET', weights=None, hidden_output='FILL_IN_HIDDEN'):
   pass
   
   
@@ -328,14 +344,23 @@ if __name__ == '__main__':
   
   ## Two modes : Test and Train
   f_in  = "data/feat/%s/%s_%s_input.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
-  f_out = "data/hidden0/%s/%s_%s_hidden.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
+  
+  f_weights = "data/layer1_feat-200/%s/%s_weights.hickle" % (_patient, _patient,)
+  
+  f_out = "data/layer1_feat-200/%s/%s_%s_hidden.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
   
   ## Load input file
+  layer_previous = hickle.load(f_in)
+  data_x = data_shared(layer_previous.features)
+  # TODO: something with timestamps array too...
+  
   ## Load weight matrix (maybe)
+  weights=None
+  # if exists load, else None
   
   if train_data:
-    train_using_Ca(dataset=f_in)
+    train_using_Ca(data_x = data_x, weights=weights)
   else:
-    test_using_Ca(dataset=f_in, hidden_output=f_out, weights=None)
+    test_using_Ca(data_x=data_x, weights=weights, hidden_output=f_out)
 
   
