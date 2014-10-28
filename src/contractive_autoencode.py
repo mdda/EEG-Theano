@@ -281,6 +281,12 @@ def train_using_Ca(learning_rate=0.01, training_epochs=20,
   #        BUILDING THE MODEL        #
   ####################################
 
+  # 
+  # W, b, b_prime = None, None, None
+  # if loaded, these should be theano-shared :
+  ## weights = theano.shared(value=loaded_W, name='W', borrow=True)
+  ## previously saved as :: ca.W.get_value(borrow=True)
+
   rng = np.random.RandomState(123)
 
   ca = cA(numpy_rng=rng, input=x,
@@ -364,12 +370,9 @@ if __name__ == '__main__':
   ## Load weight matrix (maybe)
   # if file exists: load, else: create with correct sizing?
   
-  weights=None
-  
-  
+  weights = None ## This is the data, as loaded from disk exactly
+
   if train_data:
     train_using_Ca(data_x = data_x, input_size=input_size, weights=weights, output_size=output_size)
   else:
     test_using_Ca(data_x=data_x, weights=weights, hidden_output=f_out)
-
-  
