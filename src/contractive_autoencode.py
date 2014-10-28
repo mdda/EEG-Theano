@@ -251,7 +251,8 @@ def data_shared(data_x, borrow=True):
   return shared_x
 
 def train_using_Ca(learning_rate=0.01, training_epochs=20,
-                    data_x='FILL_IN_DATASET', weights=None, 
+                    data_x='FILL_IN_DATASET', 
+                    input_size=input_size, weights=weights, output_size=output_size,
                     batch_size=10, 
                     contraction_level=.1):
 
@@ -266,15 +267,15 @@ def train_using_Ca(learning_rate=0.01, training_epochs=20,
   :param dataset: path to the picked dataset
   """
   
-  datasets = load_data(dataset)
-  train_set_x, train_set_y = datasets[0]
+  #datasets = load_data(dataset)
+  #train_set_x, train_set_y = datasets[0]
 
   # compute number of minibatches for training, validation and testing
-  n_train_batches = train_set_x.get_value(borrow=True).shape[0] / batch_size
+  n_train_batches = data_x.get_value(borrow=True).shape[0] / batch_size
 
   # allocate symbolic variables for the data
   index = T.lscalar()    # index to a [mini]batch
-  x = T.matrix('x')  # the data is presented as rasterized images
+  x = T.matrix('x')      # the data is presented as a list of examples
 
   ####################################
   #        BUILDING THE MODEL        #
@@ -283,18 +284,19 @@ def train_using_Ca(learning_rate=0.01, training_epochs=20,
   rng = np.random.RandomState(123)
 
   ca = cA(numpy_rng=rng, input=x,
-          n_visible=28 * 28, n_hidden=500, n_batchsize=batch_size)
+          n_visible=input_size, n_hidden=output_size, 
+          n_batchsize=batch_size)
 
   cost, updates = ca.get_cost_updates(contraction_level=contraction_level,
                                       learning_rate=learning_rate)
 
   train_ca = theano.function(
-      [index],
-      [T.mean(ca.L_rec), ca.L_jacob],
-      updates=updates,
-      givens={
-          x: train_set_x[index * batch_size: (index + 1) * batch_size]
-      }
+    [ index ],
+    [ T.mean(ca.L_rec), ca.L_jacob ],
+    updates=updates,
+    givens={
+      x: train_set_x[index * batch_size: (index + 1) * batch_size]
+    }
   )
 
   start_time = time.clock()
@@ -327,9 +329,9 @@ def train_using_Ca(learning_rate=0.01, training_epochs=20,
   #    tile_spacing=(1, 1)))
   #
   
-  ## Save weight matrix
-
-
+  ## Save weight matrix  
+  #ca.W, ca.b (=bhid), ca.b_prime (=bvis)
+  
 
 def test_using_Ca(data_x='FILL_IN_DATASET', weights=None, hidden_output='FILL_IN_HIDDEN'):
   pass
@@ -341,6 +343,9 @@ if __name__ == '__main__':
   _patient = 'Patient_2'
   
   train_data = True # and False
+  
+  input_size  = None # i.e. determine from f_in
+  output_size = 200  # Need some number to start us off
   
   ## Two modes : Test and Train
   f_in  = "data/feat/%s/%s_%s_input.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
@@ -354,12 +359,16 @@ if __name__ == '__main__':
   data_x = data_shared(layer_previous.features)
   # TODO: something with timestamps array too...
   
+  input_size = np.shape(layer_previous['features'])[1]
+  
   ## Load weight matrix (maybe)
+  # if file exists: load, else: create with correct sizing?
+  
   weights=None
-  # if exists load, else None
+  
   
   if train_data:
-    train_using_Ca(data_x = data_x, weights=weights)
+    train_using_Ca(data_x = data_x, input_size=input_size, weights=weights, output_size=output_size)
   else:
     test_using_Ca(data_x=data_x, weights=weights, hidden_output=f_out)
 
