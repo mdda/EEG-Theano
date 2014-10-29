@@ -84,8 +84,8 @@ class cA(object):
 
   """
 
-  def __init__(self, numpy_rng, input=None, n_visible=784, n_hidden=100,
-               n_batchsize=1, W=None, bhid=None, bvis=None):
+  def __init__(self, input=None, n_visible=784, n_hidden=100,
+               n_batchsize=1, W=None, bhid=None, bvis=None, numpy_rng=None):
     """Initialize the cA class by specifying the number of visible units
     (the dimension d of the input), the number of hidden units (the
     dimension d' of the latent or hidden space) and the contraction level.
@@ -94,10 +94,6 @@ class cA(object):
 
     :type numpy_rng: numpy.random.RandomState
     :param numpy_rng: number random generator used to generate weights
-
-    :type theano_rng: theano.tensor.shared_randomstreams.RandomStreams
-    :param theano_rng: Theano random generator; if None is given
-                 one is generated based on a seed drawn from `rng`
 
     :type input: theano.tensor.TensorType
     :param input: a symbolic description of the input or None for
@@ -126,8 +122,8 @@ class cA(object):
     :param bvis: Theano variable pointing to a set of biases values (for
                  visible units) that should be shared belong dA and another
                  architecture; if dA should be standalone set this to None
-
     """
+    
     self.n_visible = n_visible
     self.n_hidden = n_hidden
     self.n_batchsize = n_batchsize
@@ -238,6 +234,9 @@ class cA(object):
   
   @class_method
   def load_weights(_cls, f_weights):
+    if not os.path.isfile(f_weights):
+      return None, None, None
+      
     from_hickle = hickle.load(f_weights)
 
     W = theano.shared(value=from_hickle['W'], name='W', borrow=True)
@@ -288,9 +287,6 @@ def train_using_Ca(learning_rate=0.01, training_epochs=20,
   :param dataset: path to the picked dataset
   """
   
-  #datasets = load_data(dataset)
-  #train_set_x, train_set_y = datasets[0]
-
   # compute number of minibatches for training, validation and testing
   n_train_batches = data_x.get_value(borrow=True).shape[0] / batch_size
 
@@ -303,15 +299,15 @@ def train_using_Ca(learning_rate=0.01, training_epochs=20,
   ####################################
 
   W, b, b_prime = cA.load_weights(f_weights)
-  ## weights = theano.shared(value=loaded_W, name='W', borrow=True)
-
+  
   rng = np.random.RandomState(123)
 
   ca = cA(
-        numpy_rng=rng, input=x,
+        input=x,
         n_visible=input_size, n_hidden=output_size, 
-        n_batchsize=batch_size,
         W=W, bhid=b, bvis=b_prime,
+        n_batchsize=batch_size,
+        numpy_rng=rng, 
        )
 
   cost, updates = ca.get_cost_updates(contraction_level=contraction_level,
@@ -327,10 +323,6 @@ def train_using_Ca(learning_rate=0.01, training_epochs=20,
   )
 
   start_time = time.clock()
-
-  ############
-  # TRAINING #
-  ############
 
   # go through training epochs
   for epoch in xrange(training_epochs):
@@ -357,12 +349,45 @@ def train_using_Ca(learning_rate=0.01, training_epochs=20,
   #
   
   ## Save weight matrix  
-  #ca.W, ca.b (=bhid), ca.b_prime (=bvis)
-  
+  ca.save_weights(f_weights)
+
 
 def test_using_Ca(data_x='FILL_IN_DATASET', f_weights='WEIGHTS_FILENAME', f_output='OUTPUT_FILENAME'):
-  pass
+  n_train_batches = data_x.get_value(borrow=True).shape[0] / batch_size
+
+  # allocate symbolic variables for the data
+  index = T.lscalar()    # index to a [mini]batch
+  x = T.matrix('x')      # the data is presented as a list of examples
+
+  W, b, b_prime = cA.load_weights(f_weights)
   
+  ca = cA(
+        input=x,
+        #n_visible=input_size, n_hidden=output_size, # Not necessary - weights are loaded
+        W=W, bhid=b, bvis=b_prime,
+        n_batchsize=batch_size,
+       )
+
+  test_ca = theano.function(
+    [ index ],
+    #[ T.mean(ca.L_rec), ca.L_jacob ],
+    ca.get_hidden_values(ca.x),
+    #updates=updates,
+    givens={
+      x: train_set_x[index * batch_size: (index + 1) * batch_size]
+    }
+  )
+
+  c = []
+  for batch_index in xrange(n_train_batches):
+    c.append(test_ca(batch_index))
+
+  c_array = np.vstack(c)
+  #print 'Testing epoch %d, reconstruction cost ' % epoch, np.mean(
+  #  c_array[0]), ' jacobian norm ', np.mean(np.sqrt(c_array[1]))
+  
+  np.shape(c_array)
+
   
 if __name__ == '__main__':
   
