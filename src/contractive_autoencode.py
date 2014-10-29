@@ -56,185 +56,206 @@ import theano.tensor as T
 #    import Image
 
 class cA(object):
-    """ Contractive Auto-Encoder class (cA)
+  """ Contractive Auto-Encoder class (cA)
 
-    The contractive autoencoder tries to reconstruct the input with an
-    additional constraint on the latent space. With the objective of
-    obtaining a robust representation of the input space, we
-    regularize the L2 norm(Froebenius) of the jacobian of the hidden
-    representation with respect to the input. Please refer to Rifai et
-    al.,2011 for more details.
+  The contractive autoencoder tries to reconstruct the input with an
+  additional constraint on the latent space. With the objective of
+  obtaining a robust representation of the input space, we
+  regularize the L2 norm(Froebenius) of the jacobian of the hidden
+  representation with respect to the input. Please refer to Rifai et
+  al.,2011 for more details.
 
-    If x is the input then equation (1) computes the projection of the
-    input into the latent space h. Equation (2) computes the jacobian
-    of h with respect to x.  Equation (3) computes the reconstruction
-    of the input, while equation (4) computes the reconstruction
-    error and the added regularization term from Eq.(2).
+  If x is the input then equation (1) computes the projection of the
+  input into the latent space h. Equation (2) computes the jacobian
+  of h with respect to x.  Equation (3) computes the reconstruction
+  of the input, while equation (4) computes the reconstruction
+  error and the added regularization term from Eq.(2).
 
-    .. math::
+  .. math::
 
-        h_i = s(W_i x + b_i)                                             (1)
+      h_i = s(W_i x + b_i)                                             (1)
 
-        J_i = h_i (1 - h_i) * W_i                                        (2)
+      J_i = h_i (1 - h_i) * W_i                                        (2)
 
-        x' = s(W' h  + b')                                               (3)
+      x' = s(W' h  + b')                                               (3)
 
-        L = -sum_{k=1}^d [x_k \log x'_k + (1-x_k) \log( 1-x'_k)]
-             + lambda * sum_{i=1}^d sum_{j=1}^n J_{ij}^2                 (4)
+      L = -sum_{k=1}^d [x_k \log x'_k + (1-x_k) \log( 1-x'_k)]
+           + lambda * sum_{i=1}^d sum_{j=1}^n J_{ij}^2                 (4)
+
+  """
+
+  def __init__(self, numpy_rng, input=None, n_visible=784, n_hidden=100,
+               n_batchsize=1, W=None, bhid=None, bvis=None):
+    """Initialize the cA class by specifying the number of visible units
+    (the dimension d of the input), the number of hidden units (the
+    dimension d' of the latent or hidden space) and the contraction level.
+    The constructor also receives symbolic variables for the input, weights
+    and bias.
+
+    :type numpy_rng: numpy.random.RandomState
+    :param numpy_rng: number random generator used to generate weights
+
+    :type theano_rng: theano.tensor.shared_randomstreams.RandomStreams
+    :param theano_rng: Theano random generator; if None is given
+                 one is generated based on a seed drawn from `rng`
+
+    :type input: theano.tensor.TensorType
+    :param input: a symbolic description of the input or None for
+                  standalone cA
+
+    :type n_visible: int
+    :param n_visible: number of visible units
+
+    :type n_hidden: int
+    :param n_hidden:  number of hidden units
+
+    :type n_batchsize int
+    :param n_batchsize: number of examples per batch
+
+    :type W: theano.tensor.TensorType
+    :param W: Theano variable pointing to a set of weights that should be
+              shared belong the dA and another architecture; if dA should
+              be standalone set this to None
+
+    :type bhid: theano.tensor.TensorType
+    :param bhid: Theano variable pointing to a set of biases values (for
+                 hidden units) that should be shared belong dA and another
+                 architecture; if dA should be standalone set this to None
+
+    :type bvis: theano.tensor.TensorType
+    :param bvis: Theano variable pointing to a set of biases values (for
+                 visible units) that should be shared belong dA and another
+                 architecture; if dA should be standalone set this to None
 
     """
+    self.n_visible = n_visible
+    self.n_hidden = n_hidden
+    self.n_batchsize = n_batchsize
+    
+    # note : W' was written as `W_prime` and b' as `b_prime`
+    if not W:
+      # W is initialized with `initial_W` which is uniformely sampled
+      # from -4*sqrt(6./(n_visible+n_hidden)) and
+      # 4*sqrt(6./(n_hidden+n_visible))the output of uniform if
+      # converted using asarray to dtype
+      # theano.config.floatX so that the code is runable on GPU
+      initial_W = np.asarray(
+        numpy_rng.uniform(
+          low=-4 * np.sqrt(6. / (n_hidden + n_visible)),
+          high=4 * np.sqrt(6. / (n_hidden + n_visible)),
+          size=(n_visible, n_hidden)
+        ),
+        dtype=theano.config.floatX
+      )
+      W = theano.shared(value=initial_W, name='W', borrow=True)
 
-    def __init__(self, numpy_rng, input=None, n_visible=784, n_hidden=100,
-                 n_batchsize=1, W=None, bhid=None, bvis=None):
-        """Initialize the cA class by specifying the number of visible units
-        (the dimension d of the input), the number of hidden units (the
-        dimension d' of the latent or hidden space) and the contraction level.
-        The constructor also receives symbolic variables for the input, weights
-        and bias.
+    if not bvis:
+      bvis = theano.shared(value=np.zeros(n_visible, dtype=theano.config.floatX),
+                           borrow=True)
 
-        :type numpy_rng: numpy.random.RandomState
-        :param numpy_rng: number random generator used to generate weights
+    if not bhid:
+      bhid = theano.shared(value=np.zeros(n_hidden, dtype=theano.config.floatX),
+                           name='b',
+                           borrow=True)
 
-        :type theano_rng: theano.tensor.shared_randomstreams.RandomStreams
-        :param theano_rng: Theano random generator; if None is given
-                     one is generated based on a seed drawn from `rng`
+    self.W = W
+    
+    # b corresponds to the bias of the hidden
+    self.b = bhid
+    
+    # b_prime corresponds to the bias of the visible
+    self.b_prime = bvis
+    
+    # tied weights, therefore W_prime is W transpose
+    self.W_prime = self.W.T
 
-        :type input: theano.tensor.TensorType
-        :param input: a symbolic description of the input or None for
-                      standalone cA
+    # if no input is given, generate a variable representing the input
+    if input is None:
+      # we use a matrix because we expect a minibatch of several
+      # examples, each example being a row
+      self.x = T.dmatrix(name='input')
+    else:
+      self.x = input
 
-        :type n_visible: int
-        :param n_visible: number of visible units
+    self.params = [self.W, self.b, self.b_prime]
 
-        :type n_hidden: int
-        :param n_hidden:  number of hidden units
+  def get_hidden_values(self, input):
+      """ Computes the values of the hidden layer """
+      return T.nnet.sigmoid(T.dot(input, self.W) + self.b)
 
-        :type n_batchsize int
-        :param n_batchsize: number of examples per batch
+  def get_jacobian(self, hidden, W):
+      """Computes the jacobian of the hidden layer with respect to
+      the input, reshapes are necessary for broadcasting the
+      element-wise product on the right axis
 
-        :type W: theano.tensor.TensorType
-        :param W: Theano variable pointing to a set of weights that should be
-                  shared belong the dA and another architecture; if dA should
-                  be standalone set this to None
+      """
+      return T.reshape(hidden * (1 - hidden),
+                       (self.n_batchsize, 1, self.n_hidden)) * T.reshape(
+                           W, (1, self.n_visible, self.n_hidden))
 
-        :type bhid: theano.tensor.TensorType
-        :param bhid: Theano variable pointing to a set of biases values (for
-                     hidden units) that should be shared belong dA and another
-                     architecture; if dA should be standalone set this to None
+  def get_reconstructed_input(self, hidden):
+      """Computes the reconstructed input given the values of the
+      hidden layer
 
-        :type bvis: theano.tensor.TensorType
-        :param bvis: Theano variable pointing to a set of biases values (for
-                     visible units) that should be shared belong dA and another
-                     architecture; if dA should be standalone set this to None
+      """
+      return T.nnet.sigmoid(T.dot(hidden, self.W_prime) + self.b_prime)
 
-        """
-        self.n_visible = n_visible
-        self.n_hidden = n_hidden
-        self.n_batchsize = n_batchsize
-        
-        # note : W' was written as `W_prime` and b' as `b_prime`
-        if not W:
-            # W is initialized with `initial_W` which is uniformely sampled
-            # from -4*sqrt(6./(n_visible+n_hidden)) and
-            # 4*sqrt(6./(n_hidden+n_visible))the output of uniform if
-            # converted using asarray to dtype
-            # theano.config.floatX so that the code is runable on GPU
-            initial_W = np.asarray(
-                numpy_rng.uniform(
-                    low=-4 * np.sqrt(6. / (n_hidden + n_visible)),
-                    high=4 * np.sqrt(6. / (n_hidden + n_visible)),
-                    size=(n_visible, n_hidden)
-                ),
-                dtype=theano.config.floatX
-            )
-            W = theano.shared(value=initial_W, name='W', borrow=True)
+  def get_cost_updates(self, contraction_level, learning_rate):
+      """ This function computes the cost and the updates for one trainng
+      step of the cA """
 
-        if not bvis:
-            bvis = theano.shared(value=np.zeros(n_visible, dtype=theano.config.floatX),
-                                 borrow=True)
+      y = self.get_hidden_values(self.x)
+      z = self.get_reconstructed_input(y)
+      J = self.get_jacobian(y, self.W)
+      
+      # note : we sum over the size of a datapoint; if we are using
+      #        minibatches, L will be a vector, with one entry per
+      #        example in minibatch
+      self.L_rec = - T.sum(self.x * T.log(z) +
+                           (1 - self.x) * T.log(1 - z),
+                           axis=1)
 
-        if not bhid:
-            bhid = theano.shared(value=np.zeros(n_hidden, dtype=theano.config.floatX),
-                                 name='b',
-                                 borrow=True)
+      # Compute the jacobian and average over the number of samples/minibatch
+      self.L_jacob = T.sum(J ** 2) / self.n_batchsize
 
-        self.W = W
-        
-        # b corresponds to the bias of the hidden
-        self.b = bhid
-        
-        # b_prime corresponds to the bias of the visible
-        self.b_prime = bvis
-        
-        # tied weights, therefore W_prime is W transpose
-        self.W_prime = self.W.T
+      # note : L is now a vector, where each element is the
+      #        cross-entropy cost of the reconstruction of the
+      #        corresponding example of the minibatch. We need to
+      #        compute the average of all these to get the cost of
+      #        the minibatch
+      cost = T.mean(self.L_rec) + contraction_level * T.mean(self.L_jacob)
 
-        # if no input is given, generate a variable representing the input
-        if input is None:
-            # we use a matrix because we expect a minibatch of several
-            # examples, each example being a row
-            self.x = T.dmatrix(name='input')
-        else:
-            self.x = input
+      # compute the gradients of the cost of the `cA` with respect
+      # to its parameters
+      gparams = T.grad(cost, self.params)
+      
+      # generate the list of updates
+      updates = []
+      for param, gparam in zip(self.params, gparams):
+          updates.append((param, param - learning_rate * gparam))
 
-        self.params = [self.W, self.b, self.b_prime]
+      return (cost, updates)
+  
+  @class_method
+  def load_weights(_cls, f_weights):
+    from_hickle = hickle.load(f_weights)
 
-    def get_hidden_values(self, input):
-        """ Computes the values of the hidden layer """
-        return T.nnet.sigmoid(T.dot(input, self.W) + self.b)
+    W = theano.shared(value=from_hickle['W'], name='W', borrow=True)
+    b = theano.shared(value=from_hickle['b'], name='b', borrow=True)
+    b_prime = theano.shared(value=from_hickle['b_prime'], name='b_prime', borrow=True)
+    
+    return W, b, b_prime
+    
+  def save_weights(self, f_weights):
+    ## previously saved as :: ca.W.get_value(borrow=True)
+    to_hickle = dict(
+      W=self.W.get_value(borrow=True),
+      b=self.b.get_value(borrow=True),
+      b_prime = self.b_prime.get_value(borrow=True),
+    )
 
-    def get_jacobian(self, hidden, W):
-        """Computes the jacobian of the hidden layer with respect to
-        the input, reshapes are necessary for broadcasting the
-        element-wise product on the right axis
-
-        """
-        return T.reshape(hidden * (1 - hidden),
-                         (self.n_batchsize, 1, self.n_hidden)) * T.reshape(
-                             W, (1, self.n_visible, self.n_hidden))
-
-    def get_reconstructed_input(self, hidden):
-        """Computes the reconstructed input given the values of the
-        hidden layer
-
-        """
-        return T.nnet.sigmoid(T.dot(hidden, self.W_prime) + self.b_prime)
-
-    def get_cost_updates(self, contraction_level, learning_rate):
-        """ This function computes the cost and the updates for one trainng
-        step of the cA """
-
-        y = self.get_hidden_values(self.x)
-        z = self.get_reconstructed_input(y)
-        J = self.get_jacobian(y, self.W)
-        
-        # note : we sum over the size of a datapoint; if we are using
-        #        minibatches, L will be a vector, with one entry per
-        #        example in minibatch
-        self.L_rec = - T.sum(self.x * T.log(z) +
-                             (1 - self.x) * T.log(1 - z),
-                             axis=1)
-
-        # Compute the jacobian and average over the number of samples/minibatch
-        self.L_jacob = T.sum(J ** 2) / self.n_batchsize
-
-        # note : L is now a vector, where each element is the
-        #        cross-entropy cost of the reconstruction of the
-        #        corresponding example of the minibatch. We need to
-        #        compute the average of all these to get the cost of
-        #        the minibatch
-        cost = T.mean(self.L_rec) + contraction_level * T.mean(self.L_jacob)
-
-        # compute the gradients of the cost of the `cA` with respect
-        # to its parameters
-        gparams = T.grad(cost, self.params)
-        
-        # generate the list of updates
-        updates = []
-        for param, gparam in zip(self.params, gparams):
-            updates.append((param, param - learning_rate * gparam))
-
-        return (cost, updates)
+    hickle.dump(to_hickle, f_weights, mode='w', compression='gzip')
+    
 
 def data_shared(data_x, borrow=True):
   """ Function that loads the dataset into shared variables
@@ -252,7 +273,7 @@ def data_shared(data_x, borrow=True):
 
 def train_using_Ca(learning_rate=0.01, training_epochs=20,
                     data_x='FILL_IN_DATASET', 
-                    input_size=input_size, weights=weights, output_size=output_size,
+                    input_size=input_size, f_weights='WEIGHTS_FILENAME', output_size=output_size,
                     batch_size=10, 
                     contraction_level=.1):
 
@@ -281,17 +302,17 @@ def train_using_Ca(learning_rate=0.01, training_epochs=20,
   #        BUILDING THE MODEL        #
   ####################################
 
-  # 
-  # W, b, b_prime = None, None, None
-  # if loaded, these should be theano-shared :
+  W, b, b_prime = cA.load_weights(f_weights)
   ## weights = theano.shared(value=loaded_W, name='W', borrow=True)
-  ## previously saved as :: ca.W.get_value(borrow=True)
 
   rng = np.random.RandomState(123)
 
-  ca = cA(numpy_rng=rng, input=x,
-          n_visible=input_size, n_hidden=output_size, 
-          n_batchsize=batch_size)
+  ca = cA(
+        numpy_rng=rng, input=x,
+        n_visible=input_size, n_hidden=output_size, 
+        n_batchsize=batch_size,
+        W=W, bhid=b, bvis=b_prime,
+       )
 
   cost, updates = ca.get_cost_updates(contraction_level=contraction_level,
                                       learning_rate=learning_rate)
@@ -339,7 +360,7 @@ def train_using_Ca(learning_rate=0.01, training_epochs=20,
   #ca.W, ca.b (=bhid), ca.b_prime (=bvis)
   
 
-def test_using_Ca(data_x='FILL_IN_DATASET', weights=None, hidden_output='FILL_IN_HIDDEN'):
+def test_using_Ca(data_x='FILL_IN_DATASET', f_weights='WEIGHTS_FILENAME', f_output='OUTPUT_FILENAME'):
   pass
   
   
@@ -367,12 +388,7 @@ if __name__ == '__main__':
   
   input_size = np.shape(layer_previous['features'])[1]
   
-  ## Load weight matrix (maybe)
-  # if file exists: load, else: create with correct sizing?
-  
-  weights = None ## This is the data, as loaded from disk exactly
-
   if train_data:
-    train_using_Ca(data_x = data_x, input_size=input_size, weights=weights, output_size=output_size)
+    train_using_Ca(data_x = data_x, input_size=input_size, f_weights=f_weights, output_size=output_size)
   else:
-    test_using_Ca(data_x=data_x, weights=weights, hidden_output=f_out)
+    test_using_Ca(data_x=data_x, f_weights=f_weights, f_output=f_out)
