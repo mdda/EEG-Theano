@@ -265,14 +265,14 @@ def data_shared(data_x, borrow=True):
   is needed (the default behaviour if the data is not in a shared
   variable) would lead to a large decrease in performance.
   """
-  shared_x = theano.shared(numpy.asarray(data_x.view(dtype=np.float32),
-                                         dtype=theano.config.floatX),
+  shared_x = theano.shared(np.asarray(data_x.view(dtype=np.float32),
+                                      dtype=theano.config.floatX),
                            borrow=borrow)
   return shared_x
 
 def train_using_Ca(learning_rate=0.01, training_epochs=20,
-                    data_x='FILL_IN_DATASET', 
-                    input_size=input_size, f_weights='WEIGHTS_FILENAME', output_size=output_size,
+                    data_x='SHARED_DATASET', 
+                    input_size=None, f_weights='WEIGHTS_FILENAME', output_size=None,
                     batch_size=10, 
                     contraction_level=.1):
 
@@ -318,9 +318,11 @@ def train_using_Ca(learning_rate=0.01, training_epochs=20,
     [ T.mean(ca.L_rec), ca.L_jacob ],
     updates=updates,
     givens={
-      x: train_set_x[index * batch_size: (index + 1) * batch_size]
+      x: data_x[index * batch_size: (index + 1) * batch_size]
     }
   )
+
+  print "Model Built"
 
   start_time = time.clock()
 
@@ -329,6 +331,7 @@ def train_using_Ca(learning_rate=0.01, training_epochs=20,
     # go through trainng set
     c = []
     for batch_index in xrange(n_train_batches):
+      print "Epoch %d, batch_index=%d" % (epoch, batch_index)
       c.append(train_ca(batch_index))
 
     c_array = np.vstack(c)
@@ -374,7 +377,7 @@ def test_using_Ca(data_x='FILL_IN_DATASET', f_weights='WEIGHTS_FILENAME', f_outp
     ca.get_hidden_values(ca.x),
     #updates=updates,
     givens={
-      x: train_set_x[index * batch_size: (index + 1) * batch_size]
+      x: data_x[index * batch_size: (index + 1) * batch_size]
     }
   )
 
@@ -408,9 +411,10 @@ if __name__ == '__main__':
   
   ## Load input file
   layer_previous = hickle.load(f_in)
-  data_x = data_shared(layer_previous.features)
+  data_x = data_shared(layer_previous['features'])
   # TODO: something with timestamps array too...
   
+  print "input features shape : ", np.shape(layer_previous['features'])
   input_size = np.shape(layer_previous['features'])[1]
   
   if train_data:
