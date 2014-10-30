@@ -130,6 +130,7 @@ class cA(object):
     
     # note : W' was written as `W_prime` and b' as `b_prime`
     if not W:
+      print "Creating randomized cA.W"
       # W is initialized with `initial_W` which is uniformely sampled
       # from -4*sqrt(6./(n_visible+n_hidden)) and
       # 4*sqrt(6./(n_hidden+n_visible))the output of uniform if
@@ -146,10 +147,12 @@ class cA(object):
       W = theano.shared(value=initial_W, name='W', borrow=True)
 
     if not bvis:
+      print "Creating randomized cA.b_prime"
       bvis = theano.shared(value=np.zeros(n_visible, dtype=theano.config.floatX),
                            borrow=True)
 
     if not bhid:
+      print "Creating randomized cA.b"
       bhid = theano.shared(value=np.zeros(n_hidden, dtype=theano.config.floatX),
                            name='b',
                            borrow=True)
@@ -270,7 +273,7 @@ def data_shared(data_x, borrow=True):
                            borrow=borrow)
   return shared_x
 
-def train_using_Ca(learning_rate=0.01, training_epochs=20,
+def train_using_Ca(learning_rate=0.01, training_epochs=2,
                     data_x='SHARED_DATASET', 
                     input_size=None, f_weights='WEIGHTS_FILENAME', output_size=None,
                     batch_size=10, 
@@ -328,10 +331,11 @@ def train_using_Ca(learning_rate=0.01, training_epochs=20,
 
   # go through training epochs
   for epoch in xrange(training_epochs):
-    # go through trainng set
+    # go through training set
     c = []
     for batch_index in xrange(n_train_batches):
-      print "Epoch %d, batch_index=%d" % (epoch, batch_index)
+      if (batch_index % 10) == 0 :
+        print "Epoch %d, batch_index=%d" % (epoch, batch_index)
       c.append(train_ca(batch_index))
 
     c_array = np.vstack(c)
@@ -414,8 +418,11 @@ if __name__ == '__main__':
   data_x = data_shared(layer_previous['features'])
   # TODO: something with timestamps array too...
   
-  print "input features shape : ", np.shape(layer_previous['features'])
-  input_size = np.shape(layer_previous['features'])[1]
+  #print "input features shape (complex) : ", np.shape(layer_previous['features'])
+  #input_size = np.shape(layer_previous['features'])[1]
+  
+  print "input features shape (theano)  : ", np.shape(data_x.get_value(borrow=True))
+  input_size = np.shape(data_x.get_value(borrow=True))[1]
   
   if train_data:
     train_using_Ca(data_x = data_x, input_size=input_size, f_weights=f_weights, output_size=output_size)
