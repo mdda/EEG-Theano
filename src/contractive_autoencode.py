@@ -186,16 +186,13 @@ class cA(object):
       """Computes the jacobian of the hidden layer with respect to
       the input, reshapes are necessary for broadcasting the
       element-wise product on the right axis
-
       """
-      return T.reshape(hidden * (1 - hidden),
-                       (self.n_batchsize, 1, self.n_hidden)) * T.reshape(
-                           W, (1, self.n_visible, self.n_hidden))
+      return T.reshape(hidden * (1 - hidden), (self.n_batchsize, 1, self.n_hidden)) * 
+             T.reshape(W, (1, self.n_visible, self.n_hidden))
 
   def get_reconstructed_input(self, hidden):
       """Computes the reconstructed input given the values of the
       hidden layer
-
       """
       return T.nnet.sigmoid(T.dot(hidden, self.W_prime) + self.b_prime)
 
