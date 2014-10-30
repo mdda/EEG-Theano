@@ -232,7 +232,7 @@ class cA(object):
 
       return (cost, updates)
   
-  @class_method
+  @classmethod
   def load_weights(_cls, f_weights):
     if not os.path.isfile(f_weights):
       return None, None, None
