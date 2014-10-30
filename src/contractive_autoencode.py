@@ -204,18 +204,18 @@ class cA(object):
       step of the cA """
 
       y = self.get_hidden_values(self.x)
-      z = self.get_reconstructed_input(y)
       J = self.get_jacobian(y, self.W)
+      z = self.get_reconstructed_input(y)
       
+      # Compute the jacobian and average over the number of samples/minibatch
+      self.L_jacob = T.sum(J ** 2) / self.n_batchsize
+
       # note : we sum over the size of a datapoint; if we are using
       #        minibatches, L will be a vector, with one entry per
       #        example in minibatch
       self.L_rec = - T.sum(self.x * T.log(z) +
                            (1 - self.x) * T.log(1 - z),
                            axis=1)
-
-      # Compute the jacobian and average over the number of samples/minibatch
-      self.L_jacob = T.sum(J ** 2) / self.n_batchsize
 
       # note : L is now a vector, where each element is the
       #        cross-entropy cost of the reconstruction of the
