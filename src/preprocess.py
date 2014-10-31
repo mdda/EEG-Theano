@@ -37,7 +37,7 @@ def preprocess(p):
     print "Signal duration : %6.2fsec = %d samples " % (signal_duration, sample_length, )
 
     ## Matrix that gathers FFT entries into buckets
-    ## Want buckets to be [0-0.000001 - 1.5 - 2.5 - 3.5 - ... - 49.5] Hz
+    ## Want buckets to be [0 - 0.5 - 1.5 - 2.5 - 3.5 - ... - 49.5] Hz
     bin_array = np.linspace(0., 49., num=50) 
 
     ## http://docs.scipy.org/doc/numpy/reference/routines.fft.html#module-numpy.fft
@@ -110,7 +110,7 @@ if False:
       preprocess(p)
 
 if True:
-  # concatinate entries
+  # concatinate entries  (NB, must do train first, to generate min/max meta-data)
   train_data = True #and False
   
   d=[]
@@ -138,18 +138,11 @@ if True:
   all_features = np.vstack(tuple(d)).view(dtype=np.float32)
   print np.shape(all_features)
   
-  to_hickle = dict(
-    features=all_features,
-  )
+  f_meta = "data/feat/%s/%s_meta_input.hickle" % (_patient, _patient, )
   
-  f_out  = "data/feat/%s/%s_%s_input.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
-  hickle.dump(to_hickle, f_out, mode='w', compression='gzip')
-
   if train_data:  # produce meta-data only from training set
-    per_feature_min = np.min(all_features, axis=1)
-    per_feature_max = np.max(all_features, axis=1)
-    
-    f_meta = "data/feat/%s/%s_meta_input.hickle" % (_patient, _patient, )
+    per_feature_min = np.min(all_features, axis=0)
+    per_feature_max = np.max(all_features, axis=0)
     
     to_hickle = dict(
       signal_period_starts=signal_period_starts,
@@ -158,3 +151,18 @@ if True:
     )
     
     hickle.dump(to_hickle, f_meta, mode='w', compression='gzip')
+    
+  else:
+    from_hickle_meta = hickle.load(f_meta)
+    per_feature_min = from_hickle_meta['per_feature_min']
+    per_feature_max = from_hickle_meta['per_feature_max']    
+  
+  norm_features = (all_features - per_feature_min)/(per_feature_max-per_feature_min)
+  
+  to_hickle = dict(
+    features=norm_features,
+  )
+  
+  f_out  = "data/feat/%s/%s_%s_input.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
+  hickle.dump(to_hickle, f_out, mode='w', compression='gzip')
+
