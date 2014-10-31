@@ -187,8 +187,10 @@ class cA(object):
       the input, reshapes are necessary for broadcasting the
       element-wise product on the right axis
       """
-      return T.reshape(hidden * (1 - hidden), (self.n_batchsize, 1, self.n_hidden)) * 
-             T.reshape(W, (1, self.n_visible, self.n_hidden))
+      return (
+        T.reshape(hidden * (1 - hidden), (self.n_batchsize, 1, self.n_hidden)) * 
+        T.reshape(W, (1, self.n_visible, self.n_hidden))
+      )
 
   def get_reconstructed_input(self, hidden):
       """Computes the reconstructed input given the values of the
@@ -331,7 +333,7 @@ def train_using_Ca(learning_rate=0.01, training_epochs=2,
     # go through training set
     c = []
     for batch_index in xrange(n_train_batches):
-      if (batch_index % 10) == 0 :
+      if (batch_index % 100) == 0 :
         print "Epoch %d, batch_index=%d" % (epoch, batch_index)
       c.append(train_ca(batch_index))
 
