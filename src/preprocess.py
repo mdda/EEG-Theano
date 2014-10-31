@@ -134,14 +134,27 @@ if True:
     if signal_period_starts is None:
       signal_period_starts = from_hickle['signal_period_starts']
 
-    
-  all_features = np.vstack(tuple(d))
+  # Convert from complex to floats here...
+  all_features = np.vstack(tuple(d)).view(dtype=np.float32)
   print np.shape(all_features)
   
   to_hickle = dict(
     features=all_features,
-    signal_period_starts=signal_period_starts,
   )
   
-  f_out = "data/feat/%s/%s_%s_input.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
+  f_out  = "data/feat/%s/%s_%s_input.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
   hickle.dump(to_hickle, f_out, mode='w', compression='gzip')
+
+  if train_data:  # produce meta-data only from training set
+    per_feature_min = np.min(all_features, axis=1)
+    per_feature_max = np.max(all_features, axis=1)
+    
+    f_meta = "data/feat/%s/%s_meta_input.hickle" % (_patient, _patient, )
+    
+    to_hickle = dict(
+      signal_period_starts=signal_period_starts,
+      per_feature_min=per_feature_min,
+      per_feature_max=per_feature_max,
+    )
+    
+    hickle.dump(to_hickle, f_meta, mode='w', compression='gzip')
