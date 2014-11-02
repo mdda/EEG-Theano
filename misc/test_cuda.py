@@ -4,6 +4,10 @@
 
 ## GPU version ()
 # THEANO_FLAGS=mode=FAST_RUN,device=gpu,floatX=float32 python misc/test_cuda.py
+# THEANO_FLAGS=mode=FAST_RUN,device=gpu,floatX=float32 optirun python misc/test_cuda.py
+
+# These complain about no nvcc in the PATH : i.e. this is a CUDA-specific 'device='
+
 
 from theano import function, config, shared, sandbox
 import theano.tensor as T
