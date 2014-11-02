@@ -1,11 +1,12 @@
 
-## This seems to give a much more 'OpenCL'-like error message now...
+## This seems to give a much more 'OpenCL'-like error message now... : 
 # THEANO_FLAGS=mode=FAST_RUN,device=opencl0:0,floatX=float32 optirun python misc/test_opencl.py 
 
-## This works with the opencl-stdint branch
+## This works with the opencl-stdint branch :
 # THEANO_FLAGS=mode=FAST_RUN,device=opencl0:0,floatX=float32,exception_verbosity=high,optimizer=fast_compile  optirun python misc/test_opencl.py 
 
-
+## Standard CPU version :
+# python misc/test_opencl.py 
 
 
 from theano import function, config, shared, sandbox
