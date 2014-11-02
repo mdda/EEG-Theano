@@ -29,6 +29,13 @@ python src/survey.py
 python src/preprocess.py
 
 
+# CPU verison : 3m10s
+python src/contractive_autoencode.py 
+
+# GPU (OpenCL) version : NOT WORKING
+THEANO_FLAGS=mode=FAST_RUN,device=opencl0:0,floatX=float32,exception_verbosity=high,optimizer=fast_compile  optirun --no-xorg python src/contractive_autoencode.py 
+
+
 
 # Works to test loader :
 python src/graph.py 
