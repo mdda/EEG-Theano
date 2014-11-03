@@ -274,10 +274,10 @@ def data_shared(data_x, borrow=True):
                            borrow=borrow)
   return shared_x
 
-def train_using_Ca(learning_rate=0.02, training_epochs=20,
+def train_using_Ca(learning_rate=0.02, training_epochs=10,
                     data_x='SHARED_DATASET', 
                     input_size=None, f_weights='WEIGHTS_FILENAME', output_size=None,
-                    batch_size=10, 
+                    batch_size=20, 
                     contraction_level=.1):
 
   """
@@ -336,7 +336,7 @@ def train_using_Ca(learning_rate=0.02, training_epochs=20,
     c = []
     for batch_index in xrange(n_train_batches):
       if (batch_index % 100) == 0 :
-        print "Epoch %d, batch_index=%d" % (epoch, batch_index)
+        print "Epoch %d, index=%d" % (epoch, batch_index*batch_size)
       c.append(train_ca(batch_index))
 
     c_array = np.vstack(c)
@@ -360,7 +360,8 @@ def train_using_Ca(learning_rate=0.02, training_epochs=20,
   ca.save_weights(f_weights)
 
 
-def test_using_Ca(data_x='FILL_IN_DATASET', f_weights='WEIGHTS_FILENAME', f_output='OUTPUT_FILENAME'):
+def apply_Ca(data_x='FILL_IN_DATASET', f_weights='WEIGHTS_FILENAME', f_output='OUTPUT_FILENAME'):
+  batch_size=20 # Not really important as a setting for just one step (must divide #-of-rows, though)
   n_train_batches = data_x.get_value(borrow=True).shape[0] / batch_size
 
   # allocate symbolic variables for the data
@@ -394,17 +395,23 @@ def test_using_Ca(data_x='FILL_IN_DATASET', f_weights='WEIGHTS_FILENAME', f_outp
   #print 'Testing epoch %d, reconstruction cost ' % epoch, np.mean(
   #  c_array[0]), ' jacobian norm ', np.mean(np.sqrt(c_array[1]))
   
-  np.shape(c_array)
+  print "Output shape : ", np.shape(c_array)
 
+  ## save output file
+  to_hickle = dict(
+   features = data_x.get_value(borrow=True),
+  )
+  hickle.dump(to_hickle, f_output, mode='w', compression='gzip')
   
 if __name__ == '__main__':
   
   _patient = 'Dog_2'
   _patient = 'Patient_2'
   
+  ## Two modes : Test and Train
   train_data = True # and False
   
-  layer_num   = 1
+  layer_num   = 2
   
   input_size, output_size = [
     (2400, 256),
@@ -412,18 +419,13 @@ if __name__ == '__main__':
     (64, 16),
   ][layer_num-1]
 
-  #input_size  = None # i.e. determine from f_in
-  #output_size = 256  # Need some number to start us off
-
-  ## Two modes : Test and Train
-  
   if layer_num==1: # First layer reads directly from data/feat/...
     f_in = "data/feat/%s/%s_%s_input.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
   else:
-    f_in = "data/model/%s/layer%d_feat-%d_%s.hickle" % (_patient, layer_num-1, input_size, ("train" if train_data else "test"), )
+    f_in = "data/model/%s/layer%d_2-output-%d_%s.hickle" % (_patient, layer_num-1, input_size, ("train" if train_data else "test"), )
   
-  f_weights = "data/model/%s/layer%d_weights-%d-%d.hickle" % (_patient, layer_num, input_size, output_size, )  
-  f_out = "data/model/%s/layer%d_feat-%d_%s.hickle" % (_patient, layer_num, output_size, ("train" if train_data else "test"), )
+  f_weights = "data/model/%s/layer%d_1-weights-%d-%d.hickle" % (_patient, layer_num, input_size, output_size, )  
+  f_out = "data/model/%s/layer%d_2-output-%d_%s.hickle" % (_patient, layer_num, output_size, ("train" if train_data else "test"), )
   
   #f_weights = "data/layer%d_feat-%d/%s/%s_weights.hickle" % (layer_num, output_size, _patient, _patient,)  
   #f_out = "data/layer%d_feat-%d/%s/%s_%s_hidden.hickle" % (layer_num, output_size, _patient, _patient, ("train" if train_data else "test"), )
@@ -431,7 +433,6 @@ if __name__ == '__main__':
   ## Load input file
   layer_previous = hickle.load(f_in)
   data_x = data_shared(layer_previous['features'])
-  # TODO: something with timestamps array too...
   
   #print "input features shape (complex) : ", np.shape(layer_previous['features'])
   #input_size = np.shape(layer_previous['features'])[1]
@@ -441,5 +442,6 @@ if __name__ == '__main__':
   
   if train_data:
     train_using_Ca(data_x = data_x, input_size=input_size, f_weights=f_weights, output_size=output_size)
-  else:
-    test_using_Ca(data_x=data_x, f_weights=f_weights, f_output=f_out)
+    pass
+    
+  apply_Ca(data_x=data_x, f_weights=f_weights, f_output=f_out)
