@@ -269,9 +269,11 @@ def data_shared(data_x, borrow=True):
   is needed (the default behaviour if the data is not in a shared
   variable) would lead to a large decrease in performance.
   """
-  shared_x = theano.shared(np.asarray(data_x.view(dtype=np.float32),
-                                      dtype=theano.config.floatX),
-                           borrow=borrow)
+  ## Don't like doing this implicitly like this : Move process back to preprocess.py
+  #shared_x = theano.shared(np.asarray(data_x.view(dtype=np.float32),
+  #                                    dtype=theano.config.floatX),
+  #                         borrow=borrow)
+  shared_x = theano.shared(np.asarray(data_x, dtype=theano.config.floatX), borrow=borrow)
   return shared_x
 
 def train_using_Ca(learning_rate=0.02, training_epochs=10,
@@ -399,7 +401,7 @@ def apply_Ca(data_x='FILL_IN_DATASET', f_weights='WEIGHTS_FILENAME', f_output='O
 
   ## save output file
   to_hickle = dict(
-   features = data_x.get_value(borrow=True),
+   features = c_array, # .get_value(borrow=True),  ## This is a plain numpy array
   )
   hickle.dump(to_hickle, f_output, mode='w', compression='gzip')
   
@@ -409,9 +411,9 @@ if __name__ == '__main__':
   _patient = 'Patient_2'
   
   ## Two modes : Test and Train
-  train_data = True # and False
+  train_data = True and False
   
-  layer_num   = 2
+  layer_num   = 3
   
   input_size, output_size = [
     (2400, 256),
@@ -426,6 +428,11 @@ if __name__ == '__main__':
   
   f_weights = "data/model/%s/layer%d_1-weights-%d-%d.hickle" % (_patient, layer_num, input_size, output_size, )  
   f_out = "data/model/%s/layer%d_2-output-%d_%s.hickle" % (_patient, layer_num, output_size, ("train" if train_data else "test"), )
+
+  print "layer_num=", layer_num
+  print "  input_file  = ", f_in
+  print "  weight_file = ", f_weights
+  print "  output_file = ", f_out
   
   #f_weights = "data/layer%d_feat-%d/%s/%s_weights.hickle" % (layer_num, output_size, _patient, _patient,)  
   #f_out = "data/layer%d_feat-%d/%s/%s_%s_hidden.hickle" % (layer_num, output_size, _patient, _patient, ("train" if train_data else "test"), )
@@ -438,7 +445,7 @@ if __name__ == '__main__':
   #input_size = np.shape(layer_previous['features'])[1]
   
   print "input features shape (theano)  : ", np.shape(data_x.get_value(borrow=True))
-  input_size = np.shape(data_x.get_value(borrow=True))[1]
+  #input_size = np.shape(data_x.get_value(borrow=True))[1]  ## Not required any more
   
   if train_data:
     train_using_Ca(data_x = data_x, input_size=input_size, f_weights=f_weights, output_size=output_size)
