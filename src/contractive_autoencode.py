@@ -147,12 +147,12 @@ class cA(object):
       W = theano.shared(value=initial_W, name='W', borrow=True)
 
     if not bvis:
-      print "Creating randomized cA.b_prime"
+      print "Creating randomized (actually==0) cA.b_prime"
       bvis = theano.shared(value=np.zeros(n_visible, dtype=theano.config.floatX),
                            borrow=True)
 
     if not bhid:
-      print "Creating randomized cA.b"
+      print "Creating randomized (actually==0) cA.b"
       bhid = theano.shared(value=np.zeros(n_hidden, dtype=theano.config.floatX),
                            name='b',
                            borrow=True)
@@ -245,6 +245,8 @@ class cA(object):
     b = theano.shared(value=from_hickle['b'], name='b', borrow=True)
     b_prime = theano.shared(value=from_hickle['b_prime'], name='b_prime', borrow=True)
     
+    print "Loaded Weights from disk"
+    
     return W, b, b_prime
     
   def save_weights(self, f_weights):
@@ -272,7 +274,7 @@ def data_shared(data_x, borrow=True):
                            borrow=borrow)
   return shared_x
 
-def train_using_Ca(learning_rate=0.01, training_epochs=2,
+def train_using_Ca(learning_rate=0.02, training_epochs=20,
                     data_x='SHARED_DATASET', 
                     input_size=None, f_weights='WEIGHTS_FILENAME', output_size=None,
                     batch_size=10, 
@@ -402,15 +404,29 @@ if __name__ == '__main__':
   
   train_data = True # and False
   
-  input_size  = None # i.e. determine from f_in
-  output_size = 200  # Need some number to start us off
+  layer_num   = 1
   
+  input_size, output_size = [
+    (2400, 256),
+    (256, 64),
+    (64, 16),
+  ][layer_num-1]
+
+  #input_size  = None # i.e. determine from f_in
+  #output_size = 256  # Need some number to start us off
+
   ## Two modes : Test and Train
-  f_in  = "data/feat/%s/%s_%s_input.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
   
-  f_weights = "data/layer1_feat-200/%s/%s_weights.hickle" % (_patient, _patient,)
+  if layer_num==1: # First layer reads directly from data/feat/...
+    f_in = "data/feat/%s/%s_%s_input.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
+  else:
+    f_in = "data/model/%s/layer%d_feat-%d_%s.hickle" % (_patient, layer_num-1, input_size, ("train" if train_data else "test"), )
   
-  f_out = "data/layer1_feat-200/%s/%s_%s_hidden.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
+  f_weights = "data/model/%s/layer%d_weights-%d-%d.hickle" % (_patient, layer_num, input_size, output_size, )  
+  f_out = "data/model/%s/layer%d_feat-%d_%s.hickle" % (_patient, layer_num, output_size, ("train" if train_data else "test"), )
+  
+  #f_weights = "data/layer%d_feat-%d/%s/%s_weights.hickle" % (layer_num, output_size, _patient, _patient,)  
+  #f_out = "data/layer%d_feat-%d/%s/%s_%s_hidden.hickle" % (layer_num, output_size, _patient, _patient, ("train" if train_data else "test"), )
   
   ## Load input file
   layer_previous = hickle.load(f_in)
