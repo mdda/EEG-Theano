@@ -413,10 +413,10 @@ if __name__ == '__main__':
   ## Two modes : Test and Train
   train_data = True and False
   
-  layer_num   = 3
+  layer_num   = 1 # 1,2,3 are the choices.
   
   input_size, output_size = [
-    (2400, 256),
+    (None, 256),
     (256, 64),
     (64, 16),
   ][layer_num-1]
@@ -441,11 +441,11 @@ if __name__ == '__main__':
   layer_previous = hickle.load(f_in)
   data_x = data_shared(layer_previous['features'])
   
-  #print "input features shape (complex) : ", np.shape(layer_previous['features'])
-  #input_size = np.shape(layer_previous['features'])[1]
-  
   print "input features shape (theano)  : ", np.shape(data_x.get_value(borrow=True))
-  #input_size = np.shape(data_x.get_value(borrow=True))[1]  ## Not required any more
+  if layer_num==1:
+    input_size = np.shape(data_x.get_value(borrow=True))[1]  ## Size dynamically, based on features input
+  
+  ## Now variables are all set to do the optional training, plus feedforward
   
   if train_data:
     train_using_Ca(data_x = data_x, input_size=input_size, f_weights=f_weights, output_size=output_size)
