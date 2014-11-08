@@ -410,8 +410,8 @@ if __name__ == '__main__':
   _patient = 'Dog_2'
   _patient = 'Patient_2'
   
-  ## Two modes : Test and Train
-  train_data = True and False
+  ## Two modes : Train and Test
+  train_data = True #and False
   
   layer_num   = 1 # 1,2,3 are the choices.
   
@@ -425,6 +425,14 @@ if __name__ == '__main__':
     f_in = "data/feat/%s/%s_%s_input.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
   else:
     f_in = "data/model/%s/layer%d_2-output-%d_%s.hickle" % (_patient, layer_num-1, input_size, ("train" if train_data else "test"), )
+
+  ## Load input file
+  layer_previous = hickle.load(f_in)
+  data_x = data_shared(layer_previous['features'])
+  
+  print "input features shape (theano)  : ", np.shape(data_x.get_value(borrow=True))
+  if layer_num==1:
+    input_size = np.shape(data_x.get_value(borrow=True))[1]  ## Size dynamically, based on features input
   
   f_weights = "data/model/%s/layer%d_1-weights-%d-%d.hickle" % (_patient, layer_num, input_size, output_size, )  
   f_out = "data/model/%s/layer%d_2-output-%d_%s.hickle" % (_patient, layer_num, output_size, ("train" if train_data else "test"), )
@@ -437,18 +445,11 @@ if __name__ == '__main__':
   #f_weights = "data/layer%d_feat-%d/%s/%s_weights.hickle" % (layer_num, output_size, _patient, _patient,)  
   #f_out = "data/layer%d_feat-%d/%s/%s_%s_hidden.hickle" % (layer_num, output_size, _patient, _patient, ("train" if train_data else "test"), )
   
-  ## Load input file
-  layer_previous = hickle.load(f_in)
-  data_x = data_shared(layer_previous['features'])
-  
-  print "input features shape (theano)  : ", np.shape(data_x.get_value(borrow=True))
-  if layer_num==1:
-    input_size = np.shape(data_x.get_value(borrow=True))[1]  ## Size dynamically, based on features input
-  
   ## Now variables are all set to do the optional training, plus feedforward
   
   if train_data:
     train_using_Ca(data_x = data_x, input_size=input_size, f_weights=f_weights, output_size=output_size)
     pass
-    
+
+  # Either path, we're interested in the 'hidden' outputs for the next layer
   apply_Ca(data_x=data_x, f_weights=f_weights, f_output=f_out)

@@ -134,8 +134,19 @@ if True:
     if signal_period_starts is None:
       signal_period_starts = from_hickle['signal_period_starts']
 
-  # Convert from complex to floats here...
-  all_features = np.vstack(tuple(d)).view(dtype=np.float32)
+  if False: 
+    # Convert from complex to floats here...
+    all_features = np.vstack(tuple(d)).view(dtype=np.float32)
+  else:
+    complex_features = np.vstack(tuple(d))
+    
+    complex_undo_log = np.exp(complex_features)
+    
+    mag = np.absolute(complex_undo_log)  # This is a real #
+    complex_relog = np.multiply( np.log1p( mag ), complex_undo_log / mag )
+    
+    all_features = complex_relog.view(dtype=np.float32) # As Re and Im components
+    
   print np.shape(all_features)
   
   f_meta = "data/feat/%s/%s_meta_input.hickle" % (_patient, _patient, )
