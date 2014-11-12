@@ -3,8 +3,11 @@ import numpy as np
 
 import EEG
 
-p = EEG.EEG('Dog_2', 'interictal', 17)
+#p = EEG.EEG('Dog_2', 'interictal', 17)
+#p = EEG.EEG('Dog_2', 'preictal', 17)
 #p = EEG.EEG('Patient_2', 'interictal', 17)
+p = EEG.EEG('Patient_2', 'preictal', 17)
+p.load()
 print p
 #p.normalize_channels()
 p.normalize_overall()

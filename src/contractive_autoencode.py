@@ -280,7 +280,7 @@ def train_using_Ca(learning_rate=0.02, training_epochs=10,
                     data_x='SHARED_DATASET', 
                     input_size=None, f_weights='WEIGHTS_FILENAME', output_size=None,
                     batch_size=20, 
-                    contraction_level=.1):
+                    contraction_level=.5):
 
   """
   :type learning_rate: float
