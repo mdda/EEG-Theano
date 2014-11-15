@@ -58,7 +58,7 @@ import theano.tensor as T
 import argparse
 parser = argparse.ArgumentParser(description='Survey the data')
 parser.add_argument('--patient', type=str, required=True, help="Dog_{1,2,3,4,5}, Patient_{1,2}")
-parser.add_argument('--train',  type=bool, required=True, help="train_data = {True, False}")
+parser.add_argument('--train',  type=int, required=True, help="train_data = {True=1, False=0}")
 parser.add_argument('--layer',  type=int, required=True,  help="layer = {1,2,3}")
 args = parser.parse_args()
 
@@ -417,7 +417,7 @@ if __name__ == '__main__':
   
   ## Two modes : Train and Test
   #train_data = True #and False
-  train_data = args.train
+  train_data = (args.train > 0)
   
   #layer_num   = 1 # 1,2,3 are the choices.
   layer_num   = args.layer 

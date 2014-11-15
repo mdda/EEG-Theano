@@ -9,11 +9,13 @@ import EEG
 import argparse
 parser = argparse.ArgumentParser(description='Survey the data')
 parser.add_argument('--patient', type=str, required=True, help="Dog_{1,2,3,4,5}, Patient_{1,2}")
-parser.add_argument('--fft',    type=bool, required=True, help="fft = {True, False}")
-parser.add_argument('--scale',  type=bool, required=True, help="scale = {True, False}")
-parser.add_argument('--train',  type=bool, required=True, help="train_data = {True, False}")
+parser.add_argument('--fft',    type=int, required=True, help="fft = {True=1, False=0}")
+parser.add_argument('--scale',  type=int, required=True, help="scale = {True=1, False=0}")
+parser.add_argument('--train',  type=int, required=True, help="train_data = {True=1, False=0}")
 args = parser.parse_args()
 
+#print "fft = ", args.fft
+#exit(0)
 _patient = args.patient
 
 signal_duration_min = 9.0  # in secs
@@ -99,7 +101,7 @@ def preprocess(p):
   f = "data/feat/%s/%s_%s_segment_%04d.hickle" % (p.patient, p.patient, p.desc, p.num)
   hickle.dump(to_hickle, f, mode='w', compression='gzip')
 
-if args.fft:
+if (args.fft>0):
   if False:  # Just do one sample
     #p = EEG.EEG(_patient, 'interictal', 17)
     p = EEG.EEG(_patient, 'preictal', 18)
@@ -116,10 +118,10 @@ if args.fft:
       
       preprocess(p)
 
-if args.scale:
+if (args.scale>0):
   # concatinate entries  (NB, must do train first, to generate min/max meta-data)
   #train_data = True #and False
-  train_data = args.train 
+  train_data = (args.train>0)
   
   d=[]
   signal_period_starts = None
