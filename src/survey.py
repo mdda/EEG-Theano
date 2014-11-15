@@ -6,8 +6,13 @@ import hickle
 
 import EEG
 
-_patient = 'Dog_2'
-_patient = 'Patient_2'
+import argparse
+parser = argparse.ArgumentParser(description='Survey the data')
+parser.add_argument('--patient', type=str, required=True, help="Dog_{1,2,3,4,5}, Patient_{1,2}")
+args = parser.parse_args()
+
+# 'Dog_2', 'Patient_2'
+_patient = args.patient
 
 d = "data/orig/%s/" % (_patient, )
 

@@ -12,21 +12,30 @@ ipython notebook
 # and open a browser to http://localhost:8888/
 %matplotlib inline
 
-
 cd data/orig
+tar -xzf Dog1.tar.gz
 tar -xzf Dog2.tar.gz
+
+tar -xzf Dog3.tar.gz
+tar -xzf Dog4.tar.gz
+tar -xzf Dog5.tar.gz
+tar -xzf Patient1.tar.gz
+tar -xzf Patient2.tar.gz
 cd ../..
 
 mkdir -p data/feat/{Dog_1,Dog_2,Dog_3,Dog_4,Dog_5,Patient_1,Patient_2}
-mkdir -p data/model/{Dog_1,Dog_2,Dog_3,Dog_4,Dog_5,Patient_1,Patient_2}
+## NO mkdir -p data/model/{Dog_1,Dog_2,Dog_3,Dog_4,Dog_5,Patient_1,Patient_2}
 
 ## Create the loader csv
-python src/survey.py
+python src/survey.py --patient Dog_2
 
 ## Preprocess all the training and test files into features 
 #  Dog_2     :: (~0.5sec each => 1543 in 16min)
 #  Patient_2 :: (~ 25sec each =>  211 in 89min)
-python src/preprocess.py
+
+python src/preprocess.py --patient Dog_2 --fft 1 --scale 0 --train 0
+python src/preprocess.py --patient Dog_2 --fft 0 --scale 1 --train 1 
+python src/preprocess.py --patient Dog_2 --fft 0 --scale 1 --train 0 
 
 
 # CPU verison : 3m10s

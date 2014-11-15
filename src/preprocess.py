@@ -6,11 +6,18 @@ import hickle
 
 import EEG
 
+import argparse
+parser = argparse.ArgumentParser(description='Survey the data')
+parser.add_argument('--patient', type=str, required=True, help="Dog_{1,2,3,4,5}, Patient_{1,2}")
+parser.add_argument('--fft',    type=bool, required=True, help="fft = {True, False}")
+parser.add_argument('--scale',  type=bool, required=True, help="scale = {True, False}")
+parser.add_argument('--train',  type=bool, required=True, help="train_data = {True, False}")
+args = parser.parse_args()
+
+_patient = args.patient
+
 signal_duration_min = 9.0  # in secs
 signal_period_step  = 5.0  # in secs
-
-_patient = 'Dog_2'
-_patient = 'Patient_2'
 
 bin_fft, signal_duration,sample_length = None,None,None
 
@@ -92,14 +99,14 @@ def preprocess(p):
   f = "data/feat/%s/%s_%s_segment_%04d.hickle" % (p.patient, p.patient, p.desc, p.num)
   hickle.dump(to_hickle, f, mode='w', compression='gzip')
 
-if False:
-  if True:  # Just do one sample
+if args.fft:
+  if False:  # Just do one sample
     #p = EEG.EEG(_patient, 'interictal', 17)
     p = EEG.EEG(_patient, 'preictal', 18)
     preprocess(p)
     exit(1)
 
-  if False:  # Load in the survey, and do the fft thing for everything
+  if True:  # Load in the survey, and do the fft thing for everything
     #d = "data/orig/%s/" % (_patient, )
     csv=open("data/survey.%s.csv" % (_patient,), 'r')
     headers = csv.readline()
@@ -109,9 +116,10 @@ if False:
       
       preprocess(p)
 
-if True:
+if args.scale:
   # concatinate entries  (NB, must do train first, to generate min/max meta-data)
-  train_data = True #and False
+  #train_data = True #and False
+  train_data = args.train 
   
   d=[]
   signal_period_starts = None
