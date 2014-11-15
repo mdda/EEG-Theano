@@ -27,7 +27,15 @@ mkdir -p data/feat/{Dog_1,Dog_2,Dog_3,Dog_4,Dog_5,Patient_1,Patient_2}
 ## NO mkdir -p data/model/{Dog_1,Dog_2,Dog_3,Dog_4,Dog_5,Patient_1,Patient_2}
 
 ## Create the loader csv
+python src/survey.py --patient Dog_1
 python src/survey.py --patient Dog_2
+
+python src/survey.py --patient Dog_3
+python src/survey.py --patient Dog_4
+python src/survey.py --patient Dog_5
+python src/survey.py --patient Patient_1
+python src/survey.py --patient Patient_2
+
 
 ## Preprocess all the training and test files into features 
 #  Dog_2     :: (~0.5sec each => 1543 in 16min)
