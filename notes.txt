@@ -19,9 +19,11 @@ cd data/orig
 tar -xzf Dog1.tar.gz
 tar -xzf Dog2.tar.gz
 tar -xzf Dog3.tar.gz
-
 tar -xzf Dog4.tar.gz
 tar -xzf Dog5.tar.gz
+
+=== HERE === 
+
 tar -xzf Patient1.tar.gz
 tar -xzf Patient2.tar.gz
 cd ../..
@@ -29,10 +31,12 @@ cd ../..
 ## Create the loader csv
 python src/survey.py --patient Dog_1
 python src/survey.py --patient Dog_2
-
 python src/survey.py --patient Dog_3
-python src/survey.py --patient Dog_4
-python src/survey.py --patient Dog_5
+python src/survey.py --patient Dog_4      & 
+python src/survey.py --patient Dog_5      &
+
+=== HERE === 
+
 python src/survey.py --patient Patient_1
 python src/survey.py --patient Patient_2
 
@@ -40,14 +44,20 @@ python src/survey.py --patient Patient_2
 ## Preprocess all the training and test files into features 
 #  Dog_2     :: (~0.5sec each => 1543 in 16min)
 
-python src/preprocess.py --patient Dog_2 --fft 1 --scale 0 --train 0
+python src/preprocess.py --patient Dog_2 --fft 1 --scale 0 --train 1
 python src/preprocess.py --patient Dog_2 --fft 0 --scale 1 --train 1 
 python src/preprocess.py --patient Dog_2 --fft 0 --scale 1 --train 0 
+
+python src/preprocess.py --patient Dog_1 --fft 1 --scale 0 --train 1 &
+python src/preprocess.py --patient Dog_3 --fft 1 --scale 0 --train 1 &
+
+=== HERE === 
 
 #  Patient_2 :: (~ 25sec each =>  211 in 89min)
 
 
 # CPU verison : 3m10s
+
 python src/contractive_autoencode.py --patient Dog_2 --layer 1 --train 1
 python src/contractive_autoencode.py --patient Dog_2 --layer 1 --train 0
 
