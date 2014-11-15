@@ -55,6 +55,13 @@ import theano.tensor as T
 #except ImportError:
 #    import Image
 
+import argparse
+parser = argparse.ArgumentParser(description='Survey the data')
+parser.add_argument('--patient', type=str, required=True, help="Dog_{1,2,3,4,5}, Patient_{1,2}")
+parser.add_argument('--train',  type=bool, required=True, help="train_data = {True, False}")
+parser.add_argument('--layer',  type=int, required=True,  help="layer = {1,2,3}")
+args = parser.parse_args()
+
 class cA(object):
   """ Contractive Auto-Encoder class (cA)
 
@@ -406,14 +413,14 @@ def apply_Ca(data_x='FILL_IN_DATASET', f_weights='WEIGHTS_FILENAME', f_output='O
   hickle.dump(to_hickle, f_output, mode='w', compression='gzip')
   
 if __name__ == '__main__':
-  
-  _patient = 'Dog_2'
-  _patient = 'Patient_2'
+  _patient = args.patient
   
   ## Two modes : Train and Test
-  train_data = True #and False
+  #train_data = True #and False
+  train_data = args.train
   
-  layer_num   = 1 # 1,2,3 are the choices.
+  #layer_num   = 1 # 1,2,3 are the choices.
+  layer_num   = args.layer 
   
   input_size, output_size = [
     (None, 256),
@@ -446,10 +453,11 @@ if __name__ == '__main__':
   #f_out = "data/layer%d_feat-%d/%s/%s_%s_hidden.hickle" % (layer_num, output_size, _patient, _patient, ("train" if train_data else "test"), )
   
   ## Now variables are all set to do the optional training, plus feedforward
-  
-  if train_data:
-    train_using_Ca(data_x = data_x, input_size=input_size, f_weights=f_weights, output_size=output_size)
-    pass
 
+  ## Also TRAIN AUTOENCODE ON TEST DATA (allowed, now, in the rules)
+  
+  if train_data or True:
+    train_using_Ca(data_x = data_x, input_size=input_size, f_weights=f_weights, output_size=output_size)
+    
   # Either path, we're interested in the 'hidden' outputs for the next layer
   apply_Ca(data_x=data_x, f_weights=f_weights, f_output=f_out)

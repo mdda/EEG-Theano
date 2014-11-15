@@ -12,19 +12,19 @@ ipython notebook
 # and open a browser to http://localhost:8888/
 %matplotlib inline
 
+mkdir -p data/feat/{Dog_1,Dog_2,Dog_3,Dog_4,Dog_5,Patient_1,Patient_2}
+## NO mkdir -p data/model/{Dog_1,Dog_2,Dog_3,Dog_4,Dog_5,Patient_1,Patient_2}
+
 cd data/orig
 tar -xzf Dog1.tar.gz
 tar -xzf Dog2.tar.gz
-
 tar -xzf Dog3.tar.gz
+
 tar -xzf Dog4.tar.gz
 tar -xzf Dog5.tar.gz
 tar -xzf Patient1.tar.gz
 tar -xzf Patient2.tar.gz
 cd ../..
-
-mkdir -p data/feat/{Dog_1,Dog_2,Dog_3,Dog_4,Dog_5,Patient_1,Patient_2}
-## NO mkdir -p data/model/{Dog_1,Dog_2,Dog_3,Dog_4,Dog_5,Patient_1,Patient_2}
 
 ## Create the loader csv
 python src/survey.py --patient Dog_1
@@ -39,15 +39,19 @@ python src/survey.py --patient Patient_2
 
 ## Preprocess all the training and test files into features 
 #  Dog_2     :: (~0.5sec each => 1543 in 16min)
-#  Patient_2 :: (~ 25sec each =>  211 in 89min)
 
 python src/preprocess.py --patient Dog_2 --fft 1 --scale 0 --train 0
 python src/preprocess.py --patient Dog_2 --fft 0 --scale 1 --train 1 
 python src/preprocess.py --patient Dog_2 --fft 0 --scale 1 --train 0 
 
+#  Patient_2 :: (~ 25sec each =>  211 in 89min)
+
 
 # CPU verison : 3m10s
-python src/contractive_autoencode.py 
+python src/contractive_autoencode.py --patient Dog_2 --layer 1 --train 1
+python src/contractive_autoencode.py --patient Dog_2 --layer 1 --train 0
+
+
 
 # GPU (OpenCL) version : NOT WORKING
 THEANO_FLAGS=mode=FAST_RUN,device=opencl0:0,floatX=float32,exception_verbosity=high,optimizer=fast_compile  optirun --no-xorg python src/contractive_autoencode.py 
