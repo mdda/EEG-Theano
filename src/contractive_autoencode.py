@@ -345,12 +345,12 @@ def train_using_Ca(learning_rate=0.02, training_epochs=10,
     c = []
     for batch_index in xrange(n_train_batches):
       if (batch_index % 100) == 0 :
-        print "Epoch %d, index=%d" % (epoch, batch_index*batch_size)
+        print "Epoch %d, index=%d, Patient:%s" % (epoch, batch_index*batch_size, args.patient)
       c.append(train_ca(batch_index))
 
     c_array = np.vstack(c)
     print 'Training epoch %d, reconstruction cost ' % epoch, np.mean(
-      c_array[0]), ' jacobian norm ', np.mean(np.sqrt(c_array[1]))
+      c_array[0]), ' jacobian norm ', np.mean(np.sqrt(c_array[1])), " Patient:", args.patient
 
   end_time = time.clock()
 
