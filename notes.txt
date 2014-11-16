@@ -75,13 +75,32 @@ python src/contractive_autoencode.py --patient Patient_1 --layer 1 &
 
 ## Seemed to gain little :: python src/contractive_autoencode.py --patient Patient_1 --layer 1 --rate 0.005 &
 
-python src/contractive_autoencode.py --patient Dog_1 --layer 2
-
+python src/contractive_autoencode.py --patient Dog_1 --layer 2 &
 python src/contractive_autoencode.py --patient Dog_2 --layer 2 &
+python src/contractive_autoencode.py --patient Dog_3 --layer 2 &
 python src/contractive_autoencode.py --patient Dog_4 --layer 2 &
 python src/contractive_autoencode.py --patient Dog_5 --layer 2 &
 
+python src/contractive_autoencode.py --patient Patient_1 --layer 2 &
+python src/contractive_autoencode.py --patient Patient_2 --layer 2 &
 
+python src/contractive_autoencode.py --patient Dog_1 --layer 3 --rate 0.005
+python src/contractive_autoencode.py --patient Dog_2 --layer 3 --rate 0.005 &
+python src/contractive_autoencode.py --patient Dog_3 --layer 3 --rate 0.005 &
+python src/contractive_autoencode.py --patient Dog_4 --layer 3 --rate 0.005 &
+python src/contractive_autoencode.py --patient Dog_5 --layer 3 --rate 0.005 &
+python src/contractive_autoencode.py --patient Patient_1 --layer 3 --rate 0.005 &
+python src/contractive_autoencode.py --patient Patient_2 --layer 3 --rate 0.005 &
+
+python src/contractive_autoencode.py --patient Dog_1 --layer 4 --rate 0.001 &
+python src/contractive_autoencode.py --patient Dog_2 --layer 4 --rate 0.001 &
+python src/contractive_autoencode.py --patient Dog_3 --layer 4 --rate 0.001 &
+python src/contractive_autoencode.py --patient Dog_4 --layer 4 --rate 0.001 &
+python src/contractive_autoencode.py --patient Dog_5 --layer 4 --rate 0.001 &
+python src/contractive_autoencode.py --patient Patient_1 --layer 4 --rate 0.001 &
+python src/contractive_autoencode.py --patient Patient_2 --layer 4 --rate 0.001 &
+
+=== HERE === 
 
 
 
