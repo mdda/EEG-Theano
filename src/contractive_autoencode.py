@@ -146,8 +146,8 @@ class cA(object):
       
       initial_W = np.asarray(
         numpy_rng.uniform(
-          low=-4 * np.sqrt(6. / (n_hidden + n_visible)),
-          high=4 * np.sqrt(6. / (n_hidden + n_visible)),
+          low = -4 * np.sqrt(6. / (n_hidden + n_visible)),
+          high= +4 * np.sqrt(6. / (n_hidden + n_visible)),
           size=(n_visible, n_hidden)
         ),
         dtype=theano.config.floatX
@@ -197,10 +197,13 @@ class cA(object):
       the input, reshapes are necessary for broadcasting the
       element-wise product on the right axis
       """
-      return (
-        T.reshape(hidden * (1 - hidden), (self.n_batchsize, 1, self.n_hidden)) * 
-          T.reshape(W, (1, self.n_visible, self.n_hidden))
-      )
+      return  T.reshape(
+                hidden * (1 - hidden), 
+                (self.n_batchsize, 1, self.n_hidden)
+              ) *  T.reshape(
+                W, 
+                (1, self.n_visible, self.n_hidden)
+              )
 
   def get_reconstructed_input(self, hidden):
       """Computes the reconstructed input given the values of the
@@ -213,17 +216,17 @@ class cA(object):
       step of the cA """
 
       y = self.get_hidden_values(self.x)
-      J = self.get_jacobian(y, self.W)
       z = self.get_reconstructed_input(y)
       
       # Compute the jacobian and average over the number of samples/minibatch
+      J = self.get_jacobian(y, self.W)
       self.L_jacob = T.sum(J ** 2) / self.n_batchsize
 
       # note : we sum over the size of a datapoint; if we are using
       #        minibatches, L will be a vector, with one entry per
       #        example in minibatch
-      self.L_rec = - T.sum(self.x * T.log(z) +
-                           (1 - self.x) * T.log(1 - z),
+      self.L_rec = - T.sum(     (self.x) * T.log(z) +
+                           (1. - self.x) * T.log(1. - z),
                            axis=1)
 
       # note : L is now a vector, where each element is the
@@ -262,8 +265,8 @@ class cA(object):
   def save_weights(self, f_weights):
     ## previously saved as :: ca.W.get_value(borrow=True)
     to_hickle = dict(
-      W=self.W.get_value(borrow=True),
-      b=self.b.get_value(borrow=True),
+      W       = self.W.get_value(borrow=True),
+      b       = self.b.get_value(borrow=True),
       b_prime = self.b_prime.get_value(borrow=True),
     )
 
