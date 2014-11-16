@@ -58,7 +58,7 @@ import theano.tensor as T
 import argparse
 parser = argparse.ArgumentParser(description='Survey the data')
 parser.add_argument('--patient', type=str, required=True, help="Dog_{1,2,3,4,5}, Patient_{1,2}")
-parser.add_argument('--train',  type=int, required=True, help="train_data = {True=1, False=0}")
+#parser.add_argument('--train',  type=int, required=True, help="train_data = {True=1, False=0}") # No distinction in this - it's all unlabelled
 parser.add_argument('--layer',  type=int, required=True,  help="layer = {1,2,3}")
 args = parser.parse_args()
 
@@ -417,7 +417,7 @@ if __name__ == '__main__':
   
   ## Two modes : Train and Test
   #train_data = True #and False
-  train_data = (args.train > 0)
+  #train_data = (args.train > 0)  # No longer used
   
   #layer_num   = 1 # 1,2,3 are the choices.
   layer_num   = args.layer 
@@ -429,9 +429,11 @@ if __name__ == '__main__':
   ][layer_num-1]
 
   if layer_num==1: # First layer reads directly from data/feat/...
-    f_in = "data/feat/%s/%s_%s_input.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
+    #f_in = "data/feat/%s/%s_%s_input.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
+    f_in = "data/feat/%s/%s_input.hickle" % (_patient, _patient, )
   else:
-    f_in = "data/model/%s/layer%d_2-output-%d_%s.hickle" % (_patient, layer_num-1, input_size, ("train" if train_data else "test"), )
+    #f_in = "data/model/%s/layer%d_2-output-%d_%s.hickle" % (_patient, layer_num-1, input_size, ("train" if train_data else "test"), )
+    f_in = "data/model/%s/layer%d_2-output-%d.hickle" % (_patient, layer_num-1, input_size, )
 
   ## Load input file
   layer_previous = hickle.load(f_in)
@@ -442,7 +444,8 @@ if __name__ == '__main__':
     input_size = np.shape(data_x.get_value(borrow=True))[1]  ## Size dynamically, based on features input
   
   f_weights = "data/model/%s/layer%d_1-weights-%d-%d.hickle" % (_patient, layer_num, input_size, output_size, )  
-  f_out = "data/model/%s/layer%d_2-output-%d_%s.hickle" % (_patient, layer_num, output_size, ("train" if train_data else "test"), )
+  #f_out = "data/model/%s/layer%d_2-output-%d_%s.hickle" % (_patient, layer_num, output_size, ("train" if train_data else "test"), )
+  f_out = "data/model/%s/layer%d_2-output-%d.hickle" % (_patient, layer_num, output_size, ) 
 
   print "layer_num=", layer_num
   print "  input_file  = ", f_in
@@ -455,8 +458,7 @@ if __name__ == '__main__':
   ## Now variables are all set to do the optional training, plus feedforward
 
   ## Also TRAIN AUTOENCODE ON TEST DATA (allowed, now, in the rules)
-  
-  if train_data or True:
+  if True : # train_data :
     train_using_Ca(data_x = data_x, input_size=input_size, f_weights=f_weights, output_size=output_size)
     
   # Either path, we're interested in the 'hidden' outputs for the next layer

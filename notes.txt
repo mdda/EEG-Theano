@@ -58,6 +58,8 @@ python src/preprocess.py --patient Dog_2 --fft 0 --scale 1 &
 python src/preprocess.py --patient Dog_3 --fft 0 --scale 1 &
 python src/preprocess.py --patient Dog_4 --fft 0 --scale 1 &
 python src/preprocess.py --patient Dog_5 --fft 0 --scale 1 &
+python src/preprocess.py --patient Patient_1 --fft 0 --scale 1 &
+python src/preprocess.py --patient Patient_2 --fft 0 --scale 1 &
 
 
 #  Patient_2 :: (~ 25sec each =>  211 in 89min)
