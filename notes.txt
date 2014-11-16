@@ -13,7 +13,7 @@ ipython notebook
 %matplotlib inline
 
 mkdir -p data/feat/{Dog_1,Dog_2,Dog_3,Dog_4,Dog_5,Patient_1,Patient_2}
-## NO mkdir -p data/model/{Dog_1,Dog_2,Dog_3,Dog_4,Dog_5,Patient_1,Patient_2}
+mkdir -p data/model/{Dog_1,Dog_2,Dog_3,Dog_4,Dog_5,Patient_1,Patient_2}
 
 cd data/orig
 tar -xzf Dog1.tar.gz
