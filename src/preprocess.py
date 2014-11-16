@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser(description='Survey the data')
 parser.add_argument('--patient', type=str, required=True, help="Dog_{1,2,3,4,5}, Patient_{1,2}")
 parser.add_argument('--fft',    type=int, required=True, help="fft = {True=1, False=0}")
 parser.add_argument('--scale',  type=int, required=True, help="scale = {True=1, False=0}")
-parser.add_argument('--train',  type=int, required=True, help="train_data = {True=1, False=0}")
+#parser.add_argument('--train',  type=int, required=True, help="train_data = {True=1, False=0}")
 args = parser.parse_args()
 
 #print "fft = ", args.fft
@@ -119,9 +119,9 @@ if (args.fft>0):
       preprocess(p)
 
 if (args.scale>0):
-  # concatinate entries  (NB, must do train first, to generate min/max meta-data)
-  #train_data = True #and False
-  train_data = (args.train>0)
+  ## concatinate entries  (NB, must do train first, to generate min/max meta-data)
+  ##train_data = True #and False
+  #train_data = (args.train>0)
   
   d=[]
   signal_period_starts = None
@@ -132,8 +132,9 @@ if (args.scale>0):
     p = EEG.EEG(_patient, '', '')  # Nonsense entries
     p.survey_line_read(line)
     
-    if (p.is_test==0) != train_data:
-      continue
+    ## Can combine test&train for unlabelled calibration
+    #if (p.is_test==0) != train_data:
+    #  continue
     print p
     
     #p.load()
@@ -161,7 +162,7 @@ if (args.scale>0):
   
   f_meta = "data/feat/%s/%s_meta_input.hickle" % (_patient, _patient, )
   
-  if train_data:  # produce meta-data only from training set
+  if True or train_data:  # PREVIOUSY :: produce meta-data only from training set
     per_feature_min = np.min(all_features, axis=0)
     per_feature_max = np.max(all_features, axis=0)
     
@@ -173,10 +174,10 @@ if (args.scale>0):
     
     hickle.dump(to_hickle, f_meta, mode='w', compression='gzip')
     
-  else:
-    from_hickle_meta = hickle.load(f_meta)
-    per_feature_min = from_hickle_meta['per_feature_min']
-    per_feature_max = from_hickle_meta['per_feature_max']    
+  #else:
+  #  from_hickle_meta = hickle.load(f_meta)
+  #  per_feature_min = from_hickle_meta['per_feature_min']
+  #  per_feature_max = from_hickle_meta['per_feature_max']    
   
   norm_features = (all_features - per_feature_min)/(per_feature_max-per_feature_min)
   
@@ -184,6 +185,7 @@ if (args.scale>0):
     features=norm_features,
   )
   
-  f_out  = "data/feat/%s/%s_%s_input.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
+  #f_out  = "data/feat/%s/%s_%s_input.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
+  f_out  = "data/feat/%s/%s_input.hickle" % (_patient, _patient, ) # ("train" if train_data else "test"), )
   hickle.dump(to_hickle, f_out, mode='w', compression='gzip')
 
