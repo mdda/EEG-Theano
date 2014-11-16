@@ -345,7 +345,7 @@ def train_using_Ca(learning_rate=0.02, training_epochs=10,
     # go through training set
     c = []
     for batch_index in xrange(n_train_batches):
-      if (batch_index % 100) == 0 :
+      if (args.layer <= 1) and (batch_index % 100) == 0 :
         print "Epoch %d, index=%d, Patient:%s" % (epoch, batch_index*batch_size, args.patient)
       c.append(train_ca(batch_index))
 

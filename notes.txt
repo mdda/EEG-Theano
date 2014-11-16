@@ -73,6 +73,19 @@ python src/contractive_autoencode.py --patient Dog_4 --layer 1 &
 python src/contractive_autoencode.py --patient Dog_5 --layer 1 &
 python src/contractive_autoencode.py --patient Patient_1 --layer 1 &
 
+## Seemed to gain little :: python src/contractive_autoencode.py --patient Patient_1 --layer 1 --rate 0.005 &
+
+python src/contractive_autoencode.py --patient Dog_1 --layer 2
+
+python src/contractive_autoencode.py --patient Dog_2 --layer 2 &
+python src/contractive_autoencode.py --patient Dog_4 --layer 2 &
+python src/contractive_autoencode.py --patient Dog_5 --layer 2 &
+
+
+
+
+
+
 
 
 # GPU (OpenCL) version : NOT WORKING
