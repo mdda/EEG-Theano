@@ -450,10 +450,10 @@ if __name__ == '__main__':
   f_out = "data/model/%s/layer%d_2-output-%d.hickle" % (_patient, layer_num, output_size, ) 
 
   print "layer_num=", layer_num
-  print "  input_file  = ", f_in
-  print "  weight_file = ", f_weights
-  print "  output_file = ", f_out
-  print "  learing_rate= ", args.rate
+  print "  input_file    = ", f_in
+  print "  weight_file   = ", f_weights
+  print "  output_file   = ", f_out
+  print "  learning_rate = ", args.rate
   
   #f_weights = "data/layer%d_feat-%d/%s/%s_weights.hickle" % (layer_num, output_size, _patient, _patient,)  
   #f_out = "data/layer%d_feat-%d/%s/%s_%s_hidden.hickle" % (layer_num, output_size, _patient, _patient, ("train" if train_data else "test"), )
