@@ -102,6 +102,14 @@ python src/contractive_autoencode.py --patient Patient_2 --layer 4 --rate 0.001 
 
 === HERE === 
 
+(env)[andrewsm@holland AES-SPC]$ ls -l data/model/*/layer4_2-output*
+-rw-rw-r--. 1 andrewsm andrewsm 15199840 Nov 17 02:03 data/model/Dog_1/layer4_2-output-16.hickle
+-rw-rw-r--. 1 andrewsm andrewsm 23294560 Nov 17 02:03 data/model/Dog_2/layer4_2-output-16.hickle
+-rw-rw-r--. 1 andrewsm andrewsm 36542560 Nov 17 02:03 data/model/Dog_3/layer4_2-output-16.hickle
+-rw-rw-r--. 1 andrewsm andrewsm 28565600 Nov 17 02:03 data/model/Dog_4/layer4_2-output-16.hickle
+-rw-rw-r--. 1 andrewsm andrewsm 10138720 Nov 17 02:03 data/model/Dog_5/layer4_2-output-16.hickle
+-rw-rw-r--. 1 andrewsm andrewsm  3976800 Nov 17 02:02 data/model/Patient_1/layer4_2-output-16.hickle
+-rw-rw-r--. 1 andrewsm andrewsm  3178080 Nov 17 02:03 data/model/Patient_2/layer4_2-output-16.hickle
 
 
 
