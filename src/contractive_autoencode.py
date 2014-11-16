@@ -423,8 +423,8 @@ if __name__ == '__main__':
   layer_num   = args.layer 
   
   input_size, output_size = [
-    (None, 512),
-    (512, 256),
+    (None, 256),
+    (256, 256),
     (256, 64),
     (64, 16),
   ][layer_num-1]
