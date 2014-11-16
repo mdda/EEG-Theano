@@ -46,12 +46,8 @@ python src/preprocess.py --patient Dog_2 --fft 1 --scale 0 &
 python src/preprocess.py --patient Dog_3 --fft 1 --scale 0 &
 python src/preprocess.py --patient Dog_4 --fft 1 --scale 0 &
 python src/preprocess.py --patient Dog_5 --fft 1 --scale 0 &
-
 python src/preprocess.py --patient Patient_1 --fft 1 --scale 0 &
 python src/preprocess.py --patient Patient_2 --fft 1 --scale 0 &
-
-=== HERE === 
-
 
 python src/preprocess.py --patient Dog_1 --fft 0 --scale 1 &
 python src/preprocess.py --patient Dog_2 --fft 0 --scale 1 &
@@ -61,14 +57,14 @@ python src/preprocess.py --patient Dog_5 --fft 0 --scale 1 &
 python src/preprocess.py --patient Patient_1 --fft 0 --scale 1 &
 python src/preprocess.py --patient Patient_2 --fft 0 --scale 1 &
 
+=== HERE === 
 
 #  Patient_2 :: (~ 25sec each =>  211 in 89min)
 
 
 # CPU verison : 3m10s
 
-python src/contractive_autoencode.py --patient Dog_2 --layer 1 --train 1
-python src/contractive_autoencode.py --patient Dog_2 --layer 1 --train 0
+python src/contractive_autoencode.py --patient Dog_2 --layer 1
 
 
 

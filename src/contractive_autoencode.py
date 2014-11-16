@@ -59,7 +59,7 @@ import argparse
 parser = argparse.ArgumentParser(description='Survey the data')
 parser.add_argument('--patient', type=str, required=True, help="Dog_{1,2,3,4,5}, Patient_{1,2}")
 #parser.add_argument('--train',  type=int, required=True, help="train_data = {True=1, False=0}") # No distinction in this - it's all unlabelled
-parser.add_argument('--layer',  type=int, required=True,  help="layer = {1,2,3}")
+parser.add_argument('--layer',  type=int, required=True,  help="layer = {1,2,3,4}")
 args = parser.parse_args()
 
 class cA(object):
@@ -419,11 +419,12 @@ if __name__ == '__main__':
   #train_data = True #and False
   #train_data = (args.train > 0)  # No longer used
   
-  #layer_num   = 1 # 1,2,3 are the choices.
+  #layer_num   = 1 # 1,2,3,4 are the choices.
   layer_num   = args.layer 
   
   input_size, output_size = [
-    (None, 256),
+    (None, 512),
+    (512, 256),
     (256, 64),
     (64, 16),
   ][layer_num-1]
