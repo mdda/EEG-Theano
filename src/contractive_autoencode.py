@@ -60,6 +60,7 @@ parser = argparse.ArgumentParser(description='Survey the data')
 parser.add_argument('--patient', type=str, required=True, help="Dog_{1,2,3,4,5}, Patient_{1,2}")
 #parser.add_argument('--train',  type=int, required=True, help="train_data = {True=1, False=0}") # No distinction in this - it's all unlabelled
 parser.add_argument('--layer',  type=int, required=True,  help="layer = {1,2,3,4}")
+parser.add_argument('--rate',  type=float, default=0.02,  help="Learning rate = [0.02]")
 args = parser.parse_args()
 
 class cA(object):
@@ -452,6 +453,7 @@ if __name__ == '__main__':
   print "  input_file  = ", f_in
   print "  weight_file = ", f_weights
   print "  output_file = ", f_out
+  print "  learing_rate= ", args.rate
   
   #f_weights = "data/layer%d_feat-%d/%s/%s_weights.hickle" % (layer_num, output_size, _patient, _patient,)  
   #f_out = "data/layer%d_feat-%d/%s/%s_%s_hidden.hickle" % (layer_num, output_size, _patient, _patient, ("train" if train_data else "test"), )
@@ -460,7 +462,7 @@ if __name__ == '__main__':
 
   ## Also TRAIN AUTOENCODE ON TEST DATA (allowed, now, in the rules)
   if True : # train_data :
-    train_using_Ca(data_x = data_x, input_size=input_size, f_weights=f_weights, output_size=output_size)
+    train_using_Ca(data_x = data_x, input_size=input_size, f_weights=f_weights, output_size=output_size, learning_rate=args.rate)
     
   # Either path, we're interested in the 'hidden' outputs for the next layer
   apply_Ca(data_x=data_x, f_weights=f_weights, f_output=f_out)
