@@ -136,14 +136,14 @@ class cA(object):
     self.n_hidden = n_hidden
     self.n_batchsize = n_batchsize
     
-    # note : W' was written as `W_prime` and b' as `b_prime`
+    # note : W' is written as `W_prime` and b' as `b_prime`
     if not W:
       print "Creating randomized cA.W"
       # W is initialized with `initial_W` which is uniformely sampled
-      # from -4*sqrt(6./(n_visible+n_hidden)) and
-      # 4*sqrt(6./(n_hidden+n_visible))the output of uniform if
-      # converted using asarray to dtype
-      # theano.config.floatX so that the code is runable on GPU
+      # from [-4, 4] *sqrt(6./(n_visible+n_hidden))
+      # the output of uniform if converted using asarray to 
+      # dtype theano.config.floatX so that the code is runable on GPU
+      
       initial_W = np.asarray(
         numpy_rng.uniform(
           low=-4 * np.sqrt(6. / (n_hidden + n_visible)),
@@ -157,13 +157,12 @@ class cA(object):
     if not bvis:
       print "Creating randomized (actually==0) cA.b_prime"
       bvis = theano.shared(value=np.zeros(n_visible, dtype=theano.config.floatX),
-                           borrow=True)
+                           name='b_prime', borrow=True)
 
     if not bhid:
       print "Creating randomized (actually==0) cA.b"
       bhid = theano.shared(value=np.zeros(n_hidden, dtype=theano.config.floatX),
-                           name='b',
-                           borrow=True)
+                           name='b', borrow=True)
 
     self.W = W
     
@@ -180,7 +179,10 @@ class cA(object):
     if input is None:
       # we use a matrix because we expect a minibatch of several
       # examples, each example being a row
-      self.x = T.dmatrix(name='input')
+      
+      #self.x = T.matrix(name='input')
+      print "No input data :: FIXME!"
+      exit(1)
     else:
       self.x = input
 
@@ -197,7 +199,7 @@ class cA(object):
       """
       return (
         T.reshape(hidden * (1 - hidden), (self.n_batchsize, 1, self.n_hidden)) * 
-        T.reshape(W, (1, self.n_visible, self.n_hidden))
+          T.reshape(W, (1, self.n_visible, self.n_hidden))
       )
 
   def get_reconstructed_input(self, hidden):
@@ -281,6 +283,7 @@ def data_shared(data_x, borrow=True):
   #shared_x = theano.shared(np.asarray(data_x.view(dtype=np.float32),
   #                                    dtype=theano.config.floatX),
   #                         borrow=borrow)
+  
   shared_x = theano.shared(np.asarray(data_x, dtype=theano.config.floatX), borrow=borrow)
   return shared_x
 
@@ -360,12 +363,6 @@ def train_using_Ca(learning_rate=0.02, training_epochs=10,
   print >> sys.stderr, ('The code for file ' + os.path.split(__file__)[1] +
                         ' ran for %.2fm' % ((training_time) / 60.))
                         
-  #image = Image.fromarray(tile_raster_images(
-  #    X=ca.W.get_value(borrow=True).T,
-  #    img_shape=(28, 28), tile_shape=(10, 10),
-  #    tile_spacing=(1, 1)))
-  #
-  
   ## Save weight matrix  
   ca.save_weights(f_weights)
 

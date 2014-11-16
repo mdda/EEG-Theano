@@ -111,6 +111,9 @@ python src/contractive_autoencode.py --patient Patient_2 --layer 4 --rate 0.001 
 -rw-rw-r--. 1 andrewsm andrewsm  3976800 Nov 17 02:02 data/model/Patient_1/layer4_2-output-16.hickle
 -rw-rw-r--. 1 andrewsm andrewsm  3178080 Nov 17 02:03 data/model/Patient_2/layer4_2-output-16.hickle
 
+# Pull back to laptop : 
+rsync -avz andrewsm@192.168.1.4:~/sketchpad/kaggle/AES-SPC/data/model/Dog_5/layer4_2-output-16.hickle data/model/Dog_5/
+rsync -avz andrewsm@192.168.1.4:~/sketchpad/kaggle/AES-SPC/data/survey.Dog_5.csv data/
 
 
 
