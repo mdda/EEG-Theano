@@ -8,7 +8,7 @@ import EEG
 
 import argparse
 parser = argparse.ArgumentParser(description='Survey the data')
-parser.add_argument('--patient', type=str, required=True, help="Dog_{1,2,3,4,5}, Patient_{1,2}")
+parser.add_argument('--subject', type=str, required=True, help="Dog_{1,2,3,4,5}, Patient_{1,2}")
 parser.add_argument('--fft',    type=int, required=True, help="fft = {True=1, False=0}")
 parser.add_argument('--scale',  type=int, required=True, help="scale = {True=1, False=0}")
 #parser.add_argument('--train',  type=int, required=True, help="train_data = {True=1, False=0}")
@@ -16,7 +16,7 @@ args = parser.parse_args()
 
 #print "fft = ", args.fft
 #exit(0)
-_patient = args.patient
+_subject = args.subject
 
 signal_duration_min = 9.0  # in secs
 signal_period_step  = 5.0  # in secs
@@ -98,22 +98,22 @@ def preprocess(p):
   )
 
   # Dump data, with compression
-  f = "data/feat/%s/%s_%s_segment_%04d.hickle" % (p.patient, p.patient, p.desc, p.num)
+  f = "data/feat/%s/%s_%s_segment_%04d.hickle" % (p.subject, p.subject, p.desc, p.num)
   hickle.dump(to_hickle, f, mode='w', compression='gzip')
 
 if (args.fft>0):
   if False:  # Just do one sample
-    #p = EEG.EEG(_patient, 'interictal', 17)
-    p = EEG.EEG(_patient, 'preictal', 18)
+    #p = EEG.EEG(_subject, 'interictal', 17)
+    p = EEG.EEG(_subject, 'preictal', 18)
     preprocess(p)
     exit(1)
 
   if True:  # Load in the survey, and do the fft thing for everything
-    #d = "data/orig/%s/" % (_patient, )
-    csv=open("data/survey.%s.csv" % (_patient,), 'r')
+    #d = "data/orig/%s/" % (_subject, )
+    csv=open("data/survey.%s.csv" % (_subject,), 'r')
     headers = csv.readline()
     for line in csv.readlines():
-      p = EEG.EEG(_patient, '', '')  # Nonsense entries
+      p = EEG.EEG(_subject, '', '')  # Nonsense entries
       p.survey_line_read(line)
       
       preprocess(p)
@@ -126,10 +126,10 @@ if (args.scale>0):
   d=[]
   signal_period_starts = None
   
-  csv=open("data/survey.%s.csv" % (_patient,), 'r')
+  csv=open("data/survey.%s.csv" % (_subject,), 'r')
   headers = csv.readline()
   for line in csv.readlines():  # [0:5]:
-    p = EEG.EEG(_patient, '', '')  # Nonsense entries
+    p = EEG.EEG(_subject, '', '')  # Nonsense entries
     p.survey_line_read(line)
     
     ## Can combine test&train for unlabelled calibration
@@ -138,7 +138,7 @@ if (args.scale>0):
     print p
     
     #p.load()
-    f_in = "data/feat/%s/%s_%s_segment_%04d.hickle" % (p.patient, p.patient, p.desc, p.num)
+    f_in = "data/feat/%s/%s_%s_segment_%04d.hickle" % (p.subject, p.subject, p.desc, p.num)
     
     from_hickle = hickle.load(f_in)
     d.append(from_hickle['features'])  
@@ -164,7 +164,7 @@ if (args.scale>0):
     
   print np.shape(all_features)
   
-  f_meta = "data/feat/%s/%s_meta_input.hickle" % (_patient, _patient, )
+  f_meta = "data/feat/%s/%s_meta_input.hickle" % (_subject, _subject, )
   
   if True or train_data:  # PREVIOUSY :: produce meta-data only from training set
     per_feature_min = np.min(all_features, axis=0)
@@ -189,7 +189,7 @@ if (args.scale>0):
     features=norm_features,
   )
   
-  #f_out  = "data/feat/%s/%s_%s_input.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
-  f_out  = "data/feat/%s/%s_input.hickle" % (_patient, _patient, ) # ("train" if train_data else "test"), )
+  #f_out  = "data/feat/%s/%s_%s_input.hickle" % (_subject, _subject, ("train" if train_data else "test"), )
+  f_out  = "data/feat/%s/%s_input.hickle" % (_subject, _subject, ) # ("train" if train_data else "test"), )
   hickle.dump(to_hickle, f_out, mode='w', compression='gzip')
 

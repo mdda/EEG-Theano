@@ -11,11 +11,19 @@ mkdir -p data/model/${SUBJ}
 #tar -xzf Dog1.tar.gz
 #cd ../..
 
-#python src/preprocess.py --patient ${SUBJ} --fft 1 --scale 0
-python src/preprocess.py --patient ${SUBJ} --fft 0 --scale 1
+## Create the loader csv
+#python src/survey.py --subject ${SUBJ}
 
-python src/contractive_autoencode.py --patient ${SUBJ} --layer 1
-python src/contractive_autoencode.py --patient ${SUBJ} --layer 2
-python src/contractive_autoencode.py --patient ${SUBJ} --layer 3 --rate 0.005
-python src/contractive_autoencode.py --patient ${SUBJ} --layer 4 --rate 0.001
+## Preprocess all the training and test files into features 
+#  Dog_2     :: (~0.5sec each => 1543 in 16min)
+#  Patient_2 :: (~ 25sec each =>  211 in 89min)
 
+# CPU verison : 3m10s
+
+#python src/preprocess.py --subject ${SUBJ} --fft 1 --scale 0
+python src/preprocess.py --subject ${SUBJ} --fft 0 --scale 1
+
+python src/contractive_autoencode.py --subject ${SUBJ} --layer 1
+python src/contractive_autoencode.py --subject ${SUBJ} --layer 2
+python src/contractive_autoencode.py --subject ${SUBJ} --layer 3 --rate 0.005
+python src/contractive_autoencode.py --subject ${SUBJ} --layer 4 --rate 0.001

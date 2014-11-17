@@ -57,7 +57,7 @@ import theano.tensor as T
 
 import argparse
 parser = argparse.ArgumentParser(description='Survey the data')
-parser.add_argument('--patient', type=str, required=True, help="Dog_{1,2,3,4,5}, Patient_{1,2}")
+parser.add_argument('--subject', type=str, required=True, help="Dog_{1,2,3,4,5}, Patient_{1,2}")
 #parser.add_argument('--train',  type=int, required=True, help="train_data = {True=1, False=0}") # No distinction in this - it's all unlabelled
 parser.add_argument('--layer',  type=int, required=True,  help="layer = {1,2,3,4}")
 parser.add_argument('--rate',  type=float, default=0.02,  help="Learning rate = [0.02]")
@@ -352,12 +352,12 @@ def train_using_Ca(learning_rate=0.02, training_epochs=5,
     c = []
     for batch_index in xrange(n_train_batches):
       if (args.layer <= 1) and (batch_index % 100) == 0 :
-        print "Epoch %d, index=%d, Patient:%s" % (epoch, batch_index*batch_size, args.patient)
+        print "Epoch %d, index=%d, Subject:%s" % (epoch, batch_index*batch_size, args.subject)
       c.append(train_ca(batch_index))
 
     c_array = np.vstack(c)
     print 'Training epoch %d, reconstruction cost ' % epoch, np.mean(
-      c_array[0]), ' jacobian norm ', np.mean(np.sqrt(c_array[1])), " Patient:", args.patient
+      c_array[0]), ' jacobian norm ', np.mean(np.sqrt(c_array[1])), " Subject:", args.subject
 
   end_time = time.clock()
 
@@ -414,7 +414,7 @@ def apply_Ca(data_x='FILL_IN_DATASET', f_weights='WEIGHTS_FILENAME', f_output='O
   hickle.dump(to_hickle, f_output, mode='w', compression='gzip')
   
 if __name__ == '__main__':
-  _patient = args.patient
+  _subject = args.subject
   
   ## Two modes : Train and Test
   #train_data = True #and False
@@ -431,11 +431,11 @@ if __name__ == '__main__':
   ][layer_num-1]
 
   if layer_num==1: # First layer reads directly from data/feat/...
-    #f_in = "data/feat/%s/%s_%s_input.hickle" % (_patient, _patient, ("train" if train_data else "test"), )
-    f_in = "data/feat/%s/%s_input.hickle" % (_patient, _patient, )
+    #f_in = "data/feat/%s/%s_%s_input.hickle" % (_subject, _subject, ("train" if train_data else "test"), )
+    f_in = "data/feat/%s/%s_input.hickle" % (_subject, _subject, )
   else:
-    #f_in = "data/model/%s/layer%d_2-output-%d_%s.hickle" % (_patient, layer_num-1, input_size, ("train" if train_data else "test"), )
-    f_in = "data/model/%s/layer%d_2-output-%d.hickle" % (_patient, layer_num-1, input_size, )
+    #f_in = "data/model/%s/layer%d_2-output-%d_%s.hickle" % (_subject, layer_num-1, input_size, ("train" if train_data else "test"), )
+    f_in = "data/model/%s/layer%d_2-output-%d.hickle" % (_subject, layer_num-1, input_size, )
 
   ## Load input file
   layer_previous = hickle.load(f_in)
@@ -445,9 +445,9 @@ if __name__ == '__main__':
   if layer_num==1:
     input_size = np.shape(data_x.get_value(borrow=True))[1]  ## Size dynamically, based on features input
   
-  f_weights = "data/model/%s/layer%d_1-weights-%d-%d.hickle" % (_patient, layer_num, input_size, output_size, )  
-  #f_out = "data/model/%s/layer%d_2-output-%d_%s.hickle" % (_patient, layer_num, output_size, ("train" if train_data else "test"), )
-  f_out = "data/model/%s/layer%d_2-output-%d.hickle" % (_patient, layer_num, output_size, ) 
+  f_weights = "data/model/%s/layer%d_1-weights-%d-%d.hickle" % (_subject, layer_num, input_size, output_size, )  
+  #f_out = "data/model/%s/layer%d_2-output-%d_%s.hickle" % (_subject, layer_num, output_size, ("train" if train_data else "test"), )
+  f_out = "data/model/%s/layer%d_2-output-%d.hickle" % (_subject, layer_num, output_size, ) 
 
   print "layer_num=", layer_num
   print "  input_file    = ", f_in
@@ -455,8 +455,8 @@ if __name__ == '__main__':
   print "  output_file   = ", f_out
   print "  learning_rate = ", args.rate
   
-  #f_weights = "data/layer%d_feat-%d/%s/%s_weights.hickle" % (layer_num, output_size, _patient, _patient,)  
-  #f_out = "data/layer%d_feat-%d/%s/%s_%s_hidden.hickle" % (layer_num, output_size, _patient, _patient, ("train" if train_data else "test"), )
+  #f_weights = "data/layer%d_feat-%d/%s/%s_weights.hickle" % (layer_num, output_size, _subject, _subject,)  
+  #f_out = "data/layer%d_feat-%d/%s/%s_%s_hidden.hickle" % (layer_num, output_size, _subject, _subject, ("train" if train_data else "test"), )
   
   ## Now variables are all set to do the optional training, plus feedforward
 

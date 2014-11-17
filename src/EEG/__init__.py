@@ -3,10 +3,10 @@ import numpy as np
 import util
 
 class EEG:
-  def __init__(self, _patient, _desc, _num):
+  def __init__(self, _subject, _desc, _num):
     self.data=None
     
-    self.patient=_patient
+    self.subject=_subject
     self.desc   =_desc
     self.num    =_num
     
@@ -20,7 +20,7 @@ class EEG:
     self.electrode=[]
     
   def load(self):
-    d = util.load(self.patient, self.desc, self.num)
+    d = util.load(self.subject, self.desc, self.num)
     self.data = d[0].astype(dtype=np.float32)
     
     #print d[1][0]
@@ -67,7 +67,7 @@ class EEG:
   @classmethod
   def survey_header(_cls):
     return ','.join([
-      'patient','desc','num',
+      'subject','desc','num',
       'timeperiod','length_in_sec','sample_rate_in_hz', 
       'is_test', 
       'est0', 'est1', 'est2', 
@@ -78,7 +78,7 @@ class EEG:
     return ("%s,%s,%d," +"%d,%16.8f,%16.8f,"+
             "%d,"+
             "%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,\n") % (
-      self.patient, self.desc, self.num, 
+      self.subject, self.desc, self.num, 
       self.timeperiod, self.length_in_sec, self.sample_rate_in_hz, 
       self.is_test, 
       self.est0, self.est1, self.est2,
@@ -88,7 +88,7 @@ class EEG:
   def survey_line_read(self, line):
     #print line 
     i = line.split(",")
-    self.patient, self.desc, self.num = i[0], i[1], int(i[2])
+    self.subject, self.desc, self.num = i[0], i[1], int(i[2])
     self.timeperiod, self.length_in_sec, self.sample_rate_in_hz = float(i[3]), float(i[4]), float(i[5])
     self.is_test = int(i[6])
     self.est0, self.est1, self.est2 = float(i[7]), float(i[8]), float(i[9])

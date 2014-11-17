@@ -23,9 +23,9 @@ I have only looked at Dog_5 (the short one). Can anyone confirm that these are a
 
 """
 
-def load(_patient, _desc, _num):
+def load(_subject, _desc, _num):
   # 'Dog_1_interictal_segment_0008.mat'
-  f = "data/orig/%s/%s_%s_segment_%04d.mat" % (_patient, _patient, _desc, _num)
+  f = "data/orig/%s/%s_%s_segment_%04d.mat" % (_subject, _subject, _desc, _num)
   sample = "%s_segment_%d" % (_desc, _num)
   #print f, sample
   

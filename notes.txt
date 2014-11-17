@@ -12,95 +12,15 @@ ipython notebook
 # and open a browser to http://localhost:8888/
 %matplotlib inline
 
-mkdir -p data/feat/{Dog_1,Dog_2,Dog_3,Dog_4,Dog_5,Patient_1,Patient_2}
-mkdir -p data/model/{Dog_1,Dog_2,Dog_3,Dog_4,Dog_5,Patient_1,Patient_2}
+=== Run all  === 
 
-cd data/orig
-tar -xzf Dog1.tar.gz
-tar -xzf Dog2.tar.gz
-tar -xzf Dog3.tar.gz
-tar -xzf Dog4.tar.gz
-tar -xzf Dog5.tar.gz
-tar -xzf Patient1.tar.gz
-tar -xzf Patient2.tar.gz
-cd ../..
-
-## Create the loader csv
-
-python src/survey.py --patient Dog_1
-python src/survey.py --patient Dog_2
-python src/survey.py --patient Dog_3
-python src/survey.py --patient Dog_4      & 
-python src/survey.py --patient Dog_5      &
-python src/survey.py --patient Patient_1 &
-python src/survey.py --patient Patient_2 &
-
-=== HERE === 
-
-
-## Preprocess all the training and test files into features 
-#  Dog_2     :: (~0.5sec each => 1543 in 16min)
-
-python src/preprocess.py --patient Dog_1 --fft 1 --scale 0 &
-python src/preprocess.py --patient Dog_2 --fft 1 --scale 0 &
-python src/preprocess.py --patient Dog_3 --fft 1 --scale 0 &
-python src/preprocess.py --patient Dog_4 --fft 1 --scale 0 &
-python src/preprocess.py --patient Dog_5 --fft 1 --scale 0 &
-python src/preprocess.py --patient Patient_1 --fft 1 --scale 0 &
-python src/preprocess.py --patient Patient_2 --fft 1 --scale 0 &
-
-python src/preprocess.py --patient Dog_1 --fft 0 --scale 1 &
-python src/preprocess.py --patient Dog_2 --fft 0 --scale 1 &
-python src/preprocess.py --patient Dog_3 --fft 0 --scale 1 &
-python src/preprocess.py --patient Dog_4 --fft 0 --scale 1 &
-python src/preprocess.py --patient Dog_5 --fft 0 --scale 1 &
-python src/preprocess.py --patient Patient_1 --fft 0 --scale 1 &
-python src/preprocess.py --patient Patient_2 --fft 0 --scale 1 &
-
-=== HERE === 
-
-#  Patient_2 :: (~ 25sec each =>  211 in 89min)
-
-
-# CPU verison : 3m10s
-
-python src/contractive_autoencode.py --patient Dog_2 --layer 1
-python src/contractive_autoencode.py --patient Patient_2 --layer 1 
-
-python src/contractive_autoencode.py --patient Dog_1 --layer 1 &
-python src/contractive_autoencode.py --patient Dog_3 --layer 1 &
-python src/contractive_autoencode.py --patient Dog_4 --layer 1 &
-python src/contractive_autoencode.py --patient Dog_5 --layer 1 &
-python src/contractive_autoencode.py --patient Patient_1 --layer 1 &
-
-## Seemed to gain little :: python src/contractive_autoencode.py --patient Patient_1 --layer 1 --rate 0.005 &
-
-python src/contractive_autoencode.py --patient Dog_1 --layer 2 &
-python src/contractive_autoencode.py --patient Dog_2 --layer 2 &
-python src/contractive_autoencode.py --patient Dog_3 --layer 2 &
-python src/contractive_autoencode.py --patient Dog_4 --layer 2 &
-python src/contractive_autoencode.py --patient Dog_5 --layer 2 &
-
-python src/contractive_autoencode.py --patient Patient_1 --layer 2 &
-python src/contractive_autoencode.py --patient Patient_2 --layer 2 &
-
-python src/contractive_autoencode.py --patient Dog_1 --layer 3 --rate 0.005
-python src/contractive_autoencode.py --patient Dog_2 --layer 3 --rate 0.005 &
-python src/contractive_autoencode.py --patient Dog_3 --layer 3 --rate 0.005 &
-python src/contractive_autoencode.py --patient Dog_4 --layer 3 --rate 0.005 &
-python src/contractive_autoencode.py --patient Dog_5 --layer 3 --rate 0.005 &
-python src/contractive_autoencode.py --patient Patient_1 --layer 3 --rate 0.005 &
-python src/contractive_autoencode.py --patient Patient_2 --layer 3 --rate 0.005 &
-
-python src/contractive_autoencode.py --patient Dog_1 --layer 4 --rate 0.001 &
-python src/contractive_autoencode.py --patient Dog_2 --layer 4 --rate 0.001 &
-python src/contractive_autoencode.py --patient Dog_3 --layer 4 --rate 0.001 &
-python src/contractive_autoencode.py --patient Dog_4 --layer 4 --rate 0.001 &
-python src/contractive_autoencode.py --patient Dog_5 --layer 4 --rate 0.001 &
-python src/contractive_autoencode.py --patient Patient_1 --layer 4 --rate 0.001 &
-python src/contractive_autoencode.py --patient Patient_2 --layer 4 --rate 0.001 &
-
-=== HERE === 
+./src/process-subject Dog_1
+./src/process-subject Dog_2
+./src/process-subject Dog_3
+./src/process-subject Dog_4
+./src/process-subject Dog_5
+./src/process-subject Patient_1
+./src/process-subject Patient_2
 
 (env)[andrewsm@holland AES-SPC]$ ls -l data/model/*/layer4_2-output*
 -rw-rw-r--. 1 andrewsm andrewsm 15199840 Nov 17 02:03 data/model/Dog_1/layer4_2-output-16.hickle
@@ -110,6 +30,7 @@ python src/contractive_autoencode.py --patient Patient_2 --layer 4 --rate 0.001 
 -rw-rw-r--. 1 andrewsm andrewsm 10138720 Nov 17 02:03 data/model/Dog_5/layer4_2-output-16.hickle
 -rw-rw-r--. 1 andrewsm andrewsm  3976800 Nov 17 02:02 data/model/Patient_1/layer4_2-output-16.hickle
 -rw-rw-r--. 1 andrewsm andrewsm  3178080 Nov 17 02:03 data/model/Patient_2/layer4_2-output-16.hickle
+
 
 # Pull back to laptop : 
 rsync -avz andrewsm@192.168.1.4:~/sketchpad/kaggle/AES-SPC/data/model/Dog_5/layer4_2-output-16.hickle data/model/Dog_5/
