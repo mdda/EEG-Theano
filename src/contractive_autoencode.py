@@ -290,10 +290,10 @@ def data_shared(data_x, borrow=True):
   shared_x = theano.shared(np.asarray(data_x, dtype=theano.config.floatX), borrow=borrow)
   return shared_x
 
-def train_using_Ca(learning_rate=0.02, training_epochs=10,
+def train_using_Ca(learning_rate=0.02, training_epochs=5,
                     data_x='SHARED_DATASET', 
                     input_size=None, f_weights='WEIGHTS_FILENAME', output_size=None,
-                    batch_size=20, 
+                    batch_size=118, 
                     contraction_level=.5):
 
   """

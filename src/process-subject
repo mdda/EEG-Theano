@@ -1,0 +1,21 @@
+#! /bin/bash
+
+SUBJ=${1:-Patient_2}
+
+echo ${SUBJ}
+
+mkdir -p data/feat/${SUBJ}
+mkdir -p data/model/${SUBJ}
+
+#cd data/orig
+#tar -xzf Dog1.tar.gz
+#cd ../..
+
+#python src/preprocess.py --patient ${SUBJ} --fft 1 --scale 0
+python src/preprocess.py --patient ${SUBJ} --fft 0 --scale 1
+
+python src/contractive_autoencode.py --patient ${SUBJ} --layer 1
+python src/contractive_autoencode.py --patient ${SUBJ} --layer 2
+python src/contractive_autoencode.py --patient ${SUBJ} --layer 3 --rate 0.005
+python src/contractive_autoencode.py --patient ${SUBJ} --layer 4 --rate 0.001
+

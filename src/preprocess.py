@@ -154,7 +154,11 @@ if (args.scale>0):
     complex_undo_log = np.exp(complex_features)
     
     mag = np.absolute(complex_undo_log)  # This is a real #
-    complex_relog = np.multiply( np.log1p( mag ), complex_undo_log / mag )
+    
+    ## This may be too complex...
+    #complex_relog = np.multiply( np.log1p( mag ), complex_undo_log / mag )
+    
+    complex_relog = 1.0 * np.log1p( mag ) + 1.0j * complex_undo_log.imag/mag
     
     all_features = complex_relog.view(dtype=np.float32) # As Re and Im components
     
