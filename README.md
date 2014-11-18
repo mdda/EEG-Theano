@@ -31,9 +31,25 @@ ipython notebook
 %matplotlib inline
 {% endhighlight %}
 
+## Downloading the Data
 
-## Generating the Feautures
+Unfortunately, this has to be done within a web-brower (presumably to ensure you approved their terms of use).  And the ```.tar.gz``` files should be placed in ```./data/orig/``` alongside the ```sampleSubmission.csv``` file.
 
+For reference, my ```./data/orig/``` folder then looks like this (commas added for effect) : 
+
+{% highlight bash %}
+-rw-r-----. 1 mdda mdda  4,087,278,272 Oct  8 17:47 Dog_1.tar.gz
+-rw-r-----. 1 mdda mdda  6,328,450,131 Aug 25 22:55 Dog_2.tar.gz
+-rw-r-----. 1 mdda mdda 10,157,539,928 Aug 25 22:55 Dog_3.tar.gz
+-rw-r-----. 1 mdda mdda 10,002,012,519 Aug 25 22:55 Dog_4.tar.gz
+-rw-r-----. 1 mdda mdda  2,795,660,882 Aug 25 22:55 Dog_5.tar.gz
+-rw-r-----. 1 mdda mdda 14,738,568,676 Aug 25 22:55 Patient_1.tar.gz
+-rw-r-----. 1 mdda mdda 15,922,097,133 Aug 25 22:56 Patient_2.tar.gz
+-rw-r-----. 1 mdda mdda        119,443 Aug 25 23:09 sampleSubmission.csv
+{% endhighlight %}
+
+
+## Generating the Features
 
 {% highlight bash %}
 ./src/process-subject Dog_1
