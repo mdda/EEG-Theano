@@ -21,6 +21,7 @@ sudo yum install hdf5-devel
 (env) pip install hickle
 {% endhighlight %}
 
+
 ## Running IPython 
 
 This is so that you can play with the data interactively and beautifully :
@@ -31,9 +32,10 @@ ipython notebook
 %matplotlib inline
 {% endhighlight %}
 
+
 ## Downloading the Data
 
-Unfortunately, this has to be done within a web-brower (presumably to ensure you approved their terms of use).  And the ```.tar.gz``` files should be placed in ```./data/orig/``` alongside the ```sampleSubmission.csv``` file.
+Unfortunately, this has to be done within a web-brower (presumably to ensure you approved Kaggle's terms of use).  The downloaded ```.tar.gz``` files should be placed in ```./data/orig/``` alongside the ```sampleSubmission.csv``` file.
 
 For reference, my ```./data/orig/``` folder then looks like this (commas added for effect) : 
 
@@ -56,4 +58,25 @@ For reference, my ```./data/orig/``` folder then looks like this (commas added f
 {% endhighlight %}
 
 Where ```Dog_1``` can be one of {```Dog_1```, ```Dog_2```, ```Dog_3```, ```Dog_4```, ```Dog_5```, ```Patient_1```, ```Patient_2```}.
+
+This operation will take some time...  Have a look in the ```process-subject``` script itself to see the steps.
+
+
+## Highlights of the (incomplete) approach 
+
+This project was mainly started to force me to get the PyData pipeline 'nailed-down'.  
+
+Along the way, I discovered that Theano doesn't support enough OpenCL to run the analysis on the GPU (yet).  I've already had one Theano pull-request accepted : More will be in the pipeline.
+
+Basic idea : 
+
+  * From the papers I read about the state-of-the-art, it seems like detecting the degree of linkage (and delay constants) between different sensors would be the key
+  
+    * If one thinks of the brain as being a physical system of weights and springs, the sensors are merely reporting activity elsewhere, but the seizure mode of the brain might be caused by the various 'spring constants' changing in such a way that the whole system would be prone to fall into a self-sustaining oscillation.  So detecting characteristic features of the dynamics would be key
+    
+  * Looking at the correlations between each pair of sensors makes sense, combined with different delay factors.  However, 16 sensors gives rise to 120 pairs, and 50 possible delays (and potentially 50 different frequency bands) leads to a 'feature explosion'
+  
+  
+    
+    
 
