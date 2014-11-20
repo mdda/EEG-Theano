@@ -76,7 +76,7 @@ Basic idea :
     
   * Looking at the correlations between each pair of sensors makes sense, combined with different delay factors.  However, 16 sensors gives rise to 120 pairs, and 50 possible delays (and potentially 50 different frequency bands) leads to a 'feature explosion'
   
-  
+  * ...
     
     
 
