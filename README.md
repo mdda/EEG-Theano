@@ -77,6 +77,8 @@ Basic idea :
   * Looking at the correlations between each pair of sensors makes sense, combined with different delay factors.  However, 16 sensors gives rise to 120 pairs, and 50 possible delays (and potentially 50 different frequency bands) leads to a 'feature explosion'
   
   * Oh the other hand, taking logs should enable the FFT entires to be combined together via a matrix operation, which could (theorectically) allow the reconstruction of time-delay correlations, so (on this basis) the project is set up to do several layers of [contractive-Autoencoding](http://www.icml-2011.org/papers/455_icmlpaper.pdf) on the original features which are log( binned( FFT, 0-49Hz, 1Hz intervals) ).  
+
+  * As for windowing, the various papers I read indicated that 10-20 secs was the sweet spot for correlations between traces.  So each 10 minute frame was divided up into smaller (contiguous) windows, with the frame time adjusted so that the number of samples would be a power of 2 (for computational efficiency)
   
   
   
