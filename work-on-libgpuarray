@@ -1,0 +1,26 @@
+# execute this with ". work-on-libgpuarry" when in the EEG-Theano directory (no env yet)
+
+P=/home/andrewsm/OpenSource/EEG-Theano
+
+cd ${P}/env/Theano
+geany -i &
+cd ${P}
+. env/bin/activate
+
+xfce4-terminal \
+  --tab --title="make" \
+    --working-directory=${P}/env/libgpuarray/Build/ \
+      -e "bash -c 'pwd;make;exec bash'" \
+  --tab --title="make install" \
+    --working-directory=${P}/env/libgpuarray/Build/ \
+      -e "su -c 'make install;exec bash'" \
+  --tab --title="python setup.py" \
+     --working-directory=${P}/env/libgpuarray/ \
+      -e "bash -c '. ../bin/activate;exec bash'" \
+  &
+
+
+#  --tab --title="BaseDir"  \
+#    --working-directory=${P}/ \
+#      -e "bash -c '. env/bin/activate;exec bash'" \
+#
