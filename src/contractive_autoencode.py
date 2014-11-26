@@ -59,8 +59,9 @@ import argparse
 parser = argparse.ArgumentParser(description='Survey the data')
 parser.add_argument('--subject', type=str, required=True, help="Dog_{1,2,3,4,5}, Patient_{1,2}")
 #parser.add_argument('--train',  type=int, required=True, help="train_data = {True=1, False=0}") # No distinction in this - it's all unlabelled
-parser.add_argument('--layer',  type=int, required=True,  help="layer = {1,2,3,4}")
-parser.add_argument('--rate',  type=float, default=0.02,  help="Learning rate = [0.02]")
+parser.add_argument('--layer',   type=int, required=True,  help="layer = {1,2,3,4}")
+parser.add_argument('--rate',    type=float, default=0.02,  help="Learning rate = [0.02]")
+parser.add_argument('--epochs',  type=int, default=5,  help="Number of epochs to train (start with 5, say)")
 args = parser.parse_args()
 
 class cA(object):
@@ -352,13 +353,19 @@ def train_using_Ca(learning_rate=0.02, training_epochs=5,
     c = []
     for batch_index in xrange(n_train_batches):
       if (args.layer <= 1) and (batch_index % 100) == 0 :
-        print "Epoch %d, index=%d, Subject:%s" % (epoch, batch_index*batch_size, args.subject)
+        print "Epoch %d, index=%d, Subject:%s time-per-epoch:%4.1fs" % (
+          epoch, batch_index*batch_size, 
+          args.subject, float(time.clock() - start_time)/(epoch*n_train_batches+batch_index)/batch_size
+        )
       c.append(train_ca(batch_index))
 
     c_array = np.vstack(c)
-    print 'Training epoch %d, reconstruction cost ' % epoch, np.mean(
-      c_array[0]), ' jacobian norm ', np.mean(np.sqrt(c_array[1])), " Subject:", args.subject
-
+    print 'Training epoch %d, Reconstruction Cost: %6.2f, Jacobian Norm: %6.2f, Subject:%s, time-per-epoch: %4.1fs' % ( 
+      epoch, 
+      np.mean(c_array[0]), 
+      np.mean(np.sqrt(c_array[1])), 
+      args.subject, float(time.clock() - start_time)/((epoch+1))
+    )
   end_time = time.clock()
 
   training_time = (end_time - start_time)
@@ -462,7 +469,7 @@ if __name__ == '__main__':
 
   ## Also TRAIN AUTOENCODE ON TEST DATA (allowed, now, in the rules)
   if True : # train_data :
-    train_using_Ca(data_x = data_x, input_size=input_size, f_weights=f_weights, output_size=output_size, learning_rate=args.rate)
+    train_using_Ca(data_x = data_x, input_size=input_size, f_weights=f_weights, output_size=output_size, learning_rate=args.rate, training_epochs=args.epochs)
     
   # Either path, we're interested in the 'hidden' outputs for the next layer
   apply_Ca(data_x=data_x, f_weights=f_weights, f_output=f_out)
