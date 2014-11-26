@@ -37,6 +37,12 @@ rsync -avz andrewsm@192.168.1.4:~/sketchpad/kaggle/AES-SPC/data/model/Dog_5/laye
 rsync -avz andrewsm@192.168.1.4:~/sketchpad/kaggle/AES-SPC/data/survey.Dog_5.csv data/
 
 
+## Timing tests ::
+
+python src/contractive_autoencode.py --subject Dog_2 --layer 2
+
+THEANORC=theano.opencl.rc optirun --no-xorg \
+  python src/contractive_autoencode.py --subject Dog_2 --layer 2
 
 
 # GPU (OpenCL) version : NOT WORKING
