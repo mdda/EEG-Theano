@@ -48,17 +48,35 @@ Training epoch 1, Reconstruction Cost:  44.23, Jacobian Norm:   6.39, Subject:Pa
 Training epoch 2, Reconstruction Cost:  43.79, Jacobian Norm:   6.36, Subject:Patient_2, time-per-epoch: 49.3s
 Training epoch 3, Reconstruction Cost:  43.41, Jacobian Norm:   6.33, Subject:Patient_2, time-per-epoch: 49.4s
 
-#Old-style CUDA CPU (with initial weights from disk): 
- { lots of complaints about flot64 dtypes being created }
+#Old-style CUDA GPU (with initial weights from disk): 
+ { lots of complaints about float64 dtypes being created }
 Training epoch 0, Reconstruction Cost:  43.07, Jacobian Norm:   6.30, Subject:Patient_2, time-per-epoch: 46.3s
 Training epoch 1, Reconstruction Cost:  42.77, Jacobian Norm:   6.28, Subject:Patient_2, time-per-epoch: 46.3s
 Training epoch 2, Reconstruction Cost:  42.50, Jacobian Norm:   6.26, Subject:Patient_2, time-per-epoch: 46.4s
 Training epoch 3, Reconstruction Cost:  42.25, Jacobian Norm:   6.24, Subject:Patient_2, time-per-epoch: 46.4s
 
+#Old-style CUDA GPU (with initial weights written by GPU code first): 
+ { no complaints about float64 dtypes being created }
+Training epoch 0, Reconstruction Cost:  49.28, Jacobian Norm:   6.81, Subject:Patient_2, time-per-epoch: 12.0s
+Training epoch 1, Reconstruction Cost:  47.90, Jacobian Norm:   6.69, Subject:Patient_2, time-per-epoch: 12.0s
+Training epoch 2, Reconstruction Cost:  46.85, Jacobian Norm:   6.61, Subject:Patient_2, time-per-epoch: 11.9s
+Training epoch 3, Reconstruction Cost:  46.01, Jacobian Norm:   6.54, Subject:Patient_2, time-per-epoch: 11.9s
+
+#... but it seams that the features from the previous layer are stored on-disk as float64!
+:: So they won't interact properly with weights as float32s
+
+#Plain CPU (with initial weights from disk, but THEANO_FLAGS=floatX=float32 )
+Training epoch 0, Reconstruction Cost:  43.41, Jacobian Norm:   6.33, Subject:Patient_2, time-per-epoch: 36.9s
+Training epoch 1, Reconstruction Cost:  43.07, Jacobian Norm:   6.30, Subject:Patient_2, time-per-epoch: 36.7s
+Training epoch 2, Reconstruction Cost:  42.77, Jacobian Norm:   6.28, Subject:Patient_2, time-per-epoch: 36.6s
+Training epoch 3, Reconstruction Cost:  42.50, Jacobian Norm:   6.26, Subject:Patient_2, time-per-epoch: 36.6s
 
 
+#New-style CUDA GPU not working 
+:: due to float64s being passed into 'pow()'
 
-
+#New-style OpenCL GPU not working due to float64s being passed into 'pow()'
+:: #pragma OPENCL EXTENSION cl_khr_fp64
 
 
 # GPU (OpenCL) version : NOT WORKING

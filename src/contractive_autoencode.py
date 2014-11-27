@@ -187,6 +187,11 @@ class cA(object):
     else:
       self.x = input
 
+    print "dtype of W       : ", self.W.dtype
+    print "dtype of W_prime : ", self.W_prime.dtype
+    print "dtype of b       : ", self.b.dtype
+    print "dtype of b_prime : ", self.b_prime  .dtype
+    
     self.params = [self.W, self.b, self.b_prime]
 
   def get_hidden_values(self, input):
@@ -260,6 +265,9 @@ class cA(object):
     b_prime = theano.shared(value=from_hickle['b_prime'], name='b_prime', borrow=True)
     
     print "Loaded Weights from disk"
+    print "Loaded : dtype of W       : ", W.dtype
+    print "Loaded : dtype of b       : ", b.dtype
+    print "Loaded : dtype of b_prime : ", b_prime  .dtype
     
     return W, b, b_prime
     
@@ -289,6 +297,7 @@ def data_shared(data_x, borrow=True):
   #                         borrow=borrow)
   
   shared_x = theano.shared(np.asarray(data_x, dtype=theano.config.floatX), borrow=borrow)
+  print "Shared : dtype of x       : ", shared_x.dtype
   return shared_x
 
 def train_using_Ca(learning_rate=0.02, training_epochs=5,
