@@ -12,3 +12,5 @@ mode=FAST_RUN
 #nocleanup=True
 
 profile=True
+profile_memory=True
+profile_optimizer=True

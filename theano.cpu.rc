@@ -10,8 +10,8 @@ device=cpu
 exception_verbosity=high
 optimizer=fast_compile
 
-#mode=FAST_RUN
-mode=DebugMode
+mode=FAST_RUN
+#mode=DebugMode
 
 profile=True
 
