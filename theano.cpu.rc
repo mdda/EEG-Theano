@@ -13,6 +13,7 @@ optimizer=fast_compile
 #mode=FAST_RUN
 mode=DebugMode
 
+profile=True
 
 [blas]
 
