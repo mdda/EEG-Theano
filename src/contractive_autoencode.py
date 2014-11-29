@@ -222,18 +222,23 @@ class cA(object):
       step of the cA """
 
       y = self.get_hidden_values(self.x)
+      y.name = 'hidden_values'
+      
       z = self.get_reconstructed_input(y)
+      z.name = 'reconstructed_input'
       
       # Compute the jacobian and average over the number of samples/minibatch
       J = self.get_jacobian(y, self.W)
       self.L_jacob = T.sum(J ** 2) / self.n_batchsize
-
+      self.L_jacob.name = 'L_jacob'
+      
       # note : we sum over the size of a datapoint; if we are using
       #        minibatches, L will be a vector, with one entry per
       #        example in minibatch
       self.L_rec = - T.sum(     (self.x) * T.log(z) +
                            (1. - self.x) * T.log(1. - z),
                            axis=1)
+      self.L_rec.name = 'L_rec'
 
       # note : L is now a vector, where each element is the
       #        cross-entropy cost of the reconstruction of the
@@ -241,10 +246,11 @@ class cA(object):
       #        compute the average of all these to get the cost of
       #        the minibatch
       cost = T.mean(self.L_rec) + contraction_level * T.mean(self.L_jacob)
+      cost.name = 'cost'
 
       # compute the gradients of the cost of the `cA` with respect
       # to its parameters
-      gparams = T.grad(cost, self.params)
+      gparams = T.grad(cost, self.params, add_names=True)
       
       # generate the list of updates
       updates = []
@@ -321,8 +327,8 @@ def train_using_Ca(learning_rate=0.02, training_epochs=5,
   n_train_batches = data_x.get_value(borrow=True).shape[0] / batch_size
 
   # allocate symbolic variables for the data
-  index = T.lscalar()    # index to a [mini]batch
-  x = T.matrix('x')      # the data is presented as a list of examples
+  index = T.lscalar('index')    # index to a [mini]batch
+  x = T.matrix('examples')      # the data is presented as a list of examples
 
   ####################################
   #        BUILDING THE MODEL        #
@@ -353,6 +359,8 @@ def train_using_Ca(learning_rate=0.02, training_epochs=5,
   )
 
   print "Model Built"
+  #print theano.pp(cost)
+  print theano.printing.debugprint(train_ca)
 
   start_time = time.clock()
 
@@ -391,8 +399,8 @@ def apply_Ca(data_x='FILL_IN_DATASET', f_weights='WEIGHTS_FILENAME', f_output='O
   n_train_batches = data_x.get_value(borrow=True).shape[0] / batch_size
 
   # allocate symbolic variables for the data
-  index = T.lscalar()    # index to a [mini]batch
-  x = T.matrix('x')      # the data is presented as a list of examples
+  index = T.lscalar('index')    # index to a [mini]batch
+  x = T.matrix('examples')      # the data is presented as a list of examples
 
   W, b, b_prime = cA.load_weights(f_weights)
   

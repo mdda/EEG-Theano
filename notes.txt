@@ -84,6 +84,14 @@ THEANO_FLAGS=mode=FAST_RUN,device=opencl0:0,floatX=float32,exception_verbosity=h
 
 
 
+# old-CUDA with Profiling turned on..
+CUDA_LAUNCH_BLOCKING=1 THEANORC=theano.cuda-old.rc optirun --no-xorg python src/contractive_autoencode.py --subject Patient_2 --layer 2 --epochs 4
+
+
+# CPU with Profiling turned on..
+THEANORC=theano.cpu.rc python src/contractive_autoencode.py --subject Patient_2 --layer 2 --epochs 4
+
+
 # Works to test loader :
 python src/graph.py 
 
